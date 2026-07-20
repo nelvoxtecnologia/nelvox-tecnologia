@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PRELOADER_DONE_EVENT } from "@/components/preloader/preloaderEvents";
+import { prefersReducedMotion } from "@/lib/motion";
 
 /* ===== ENTRADAS DE SEÇÃO ===== */
 /**
@@ -32,7 +33,13 @@ export function ScrollReveal() {
   useEffect(() => {
     /* Sob movimento reduzido nenhuma timeline é criada. Os elementos já
        estão visíveis pelo CSS, então não há nada a fazer. */
-    if (document.documentElement.dataset.motion !== "full") return;
+    if (prefersReducedMotion()) return;
+
+    /* Garante a regra de CSS que mantém os itens invisíveis até a
+       animação. O script inline já escreveu isto, mas a hidratação do
+       React pode ter revertido o atributo — e sem ele os elementos
+       apareceriam antes de entrar. */
+    document.documentElement.dataset.motion = "full";
 
     gsap.registerPlugin(ScrollTrigger);
 

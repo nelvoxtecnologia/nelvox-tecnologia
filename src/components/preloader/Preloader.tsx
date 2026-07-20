@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { NelvoxSymbol } from "@/components/brand/NelvoxSymbol";
 import { GOLD, NAVY } from "@/tokens/brand";
+import { prefersReducedMotion } from "@/lib/motion";
 import { signalPreloaderDone } from "./preloaderEvents";
 
 /* ===== PRELOADER ===== */
@@ -59,7 +60,7 @@ export function Preloader() {
        desmontar — basta liberar o hero. Não chamamos setState aqui de
        propósito: um setState síncrono no corpo do efeito dispara um
        render em cascata sem que nada mude na tela. */
-    if (document.documentElement.dataset.motion !== "full") {
+    if (prefersReducedMotion()) {
       signalPreloaderDone();
       return;
     }
@@ -92,15 +93,28 @@ export function Preloader() {
       setIsDone(true);
     };
 
+    /* Os alvos são resolvidos aqui, contra o DOM, em vez de por seletor
+       string dentro do context. Um gsap.context com escopo resolve
+       strings apenas dentro do próprio elemento — o que silenciosamente
+       não encontra o #conteudo, que vive fora do preloader. Referências
+       diretas eliminam a ambiguidade. */
+    const strokes = Array.from(
+      root.querySelectorAll<SVGPathElement>(".preloader__symbol-stroke path"),
+    );
+    const orbits = Array.from(
+      root.querySelectorAll<SVGEllipseElement>(".preloader__orbit"),
+    );
+    const nodes = Array.from(
+      root.querySelectorAll<SVGCircleElement>(".preloader__node"),
+    );
+    const symbolFill = root.querySelector(".preloader__symbol-fill");
+    const symbolStroke = root.querySelector(".preloader__symbol-stroke");
+    const content = document.querySelector("#conteudo");
+
     const ctx = gsap.context(() => {
       /* Cada traço é medido em vez de ter o comprimento fixado no código:
          se o arquivo vetorial da marca for atualizado, a animação
          continua correta sem ninguém precisar lembrar de recalcular. */
-      const strokes = gsap.utils.toArray<SVGPathElement>(
-        ".preloader__symbol-stroke path",
-      );
-      const orbits = gsap.utils.toArray<SVGEllipseElement>(".preloader__orbit");
-
       [...strokes, ...orbits].forEach((el) => {
         const length = el.getTotalLength();
         gsap.set(el, { strokeDasharray: length, strokeDashoffset: length });
@@ -121,7 +135,7 @@ export function Preloader() {
 
       /* 2. Pontos luminosos. */
       tl.to(
-        ".preloader__node",
+        nodes,
         {
           opacity: 1,
           duration: T.nodes.duration,
@@ -156,16 +170,20 @@ export function Preloader() {
       );
 
       /* 5. O traço vira forma preenchida. */
-      tl.to(
-        ".preloader__symbol-fill",
-        { opacity: 1, duration: T.crossfade.duration, ease: "power1.inOut" },
-        T.crossfade.at,
-      );
-      tl.to(
-        ".preloader__symbol-stroke",
-        { opacity: 0, duration: T.crossfade.duration, ease: "power1.inOut" },
-        T.crossfade.at,
-      );
+      if (symbolFill) {
+        tl.to(
+          symbolFill,
+          { opacity: 1, duration: T.crossfade.duration, ease: "power1.inOut" },
+          T.crossfade.at,
+        );
+      }
+      if (symbolStroke) {
+        tl.to(
+          symbolStroke,
+          { opacity: 0, duration: T.crossfade.duration, ease: "power1.inOut" },
+          T.crossfade.at,
+        );
+      }
 
       /* 6. Pausa com o símbolo completo, e 7. saída. */
       tl.to(
@@ -182,12 +200,14 @@ export function Preloader() {
          manual, em paralelo à saída do preloader. fromTo em vez de to
          para que o estado inicial venha do JS: assim o conteúdo nunca
          fica preso em escala reduzida se algo falhar antes daqui. */
-      tl.fromTo(
-        "#conteudo",
-        { scale: 0.98, transformOrigin: "50% 40%" },
-        { scale: 1, duration: T.exit.duration, ease: "power2.out" },
-        T.crossfade.at + T.crossfade.duration + T.hold,
-      );
+      if (content) {
+        tl.fromTo(
+          content,
+          { scale: 0.98, transformOrigin: "50% 40%" },
+          { scale: 1, duration: T.exit.duration, ease: "power2.out" },
+          T.crossfade.at + T.crossfade.duration + T.hold,
+        );
+      }
     }, rootRef);
 
     /* O preloader nunca pode bloquear o conteúdo por mais de 3s, mesmo

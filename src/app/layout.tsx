@@ -33,9 +33,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
+    /* suppressHydrationWarning porque o MotionScript escreve data-motion
+       no <html> de propósito antes da hidratação. Sem isto o React trata
+       o atributo como divergência e o remove ao hidratar — levando junto
+       a regra de CSS que depende dele. */
     <html
       lang="pt-BR"
       className={`${cormorant.variable} ${generalSans.variable}`}
+      suppressHydrationWarning
     >
       <head>
         <MotionScript />
