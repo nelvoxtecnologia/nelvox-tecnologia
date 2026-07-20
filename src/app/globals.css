@@ -1,0 +1,159 @@
+@import "tailwindcss";
+
+/* Os tokens da marca vivem em tailwind.config.ts (fonte de verdade única).
+   O Tailwind v4 é CSS-first por padrão, mas continua aceitando o config em
+   JS/TS por esta diretiva — que é o que mantém os tokens tipados em um só
+   arquivo em vez de espalhados entre CSS e TS. */
+@config "../../tailwind.config.ts";
+
+/* ===== BASE ===== */
+
+@layer base {
+  html {
+    /* Ancoragem suave nativa do navegador: não precisa de Lenis e continua
+       respeitando prefers-reduced-motion automaticamente. */
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-navy-900 text-papel-300 font-body text-body antialiased;
+    /* Evita que qualquer overflow horizontal acidental gere scroll lateral. */
+    overflow-x: hidden;
+  }
+
+  /* Headings herdam o display; peso e tamanho vêm sempre de tokens. */
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-light;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* ===== FOCO DE TECLADO =====
+     Visível em todo elemento interativo. Nunca remover sem substituir:
+     é requisito de acessibilidade, não decoração. */
+  :focus-visible {
+    @apply outline-gold-400;
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* O mouse não deve ver o anel; o teclado sempre deve. */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  ::selection {
+    @apply bg-gold-400 text-navy-950;
+  }
+}
+
+/* ===== UTILITÁRIOS DE COMPOSIÇÃO ===== */
+
+@layer components {
+  /* Container do grid: max-width 1280px, margem 80px desktop / 20px mobile. */
+  .brand-container {
+    @apply mx-auto w-full max-w-container px-[20px] lg:px-20;
+  }
+
+  /* Eyebrow: sempre caixa alta, tracking ≥3px, 9px General Sans Medium. */
+  .eyebrow {
+    @apply font-body text-eyebrow uppercase text-gold-400;
+  }
+
+  /* Wordmark NELVOX: sempre caixa alta, letter-spacing 6px. */
+  .wordmark {
+    @apply font-body font-semibold uppercase tracking-wordmark;
+  }
+
+  /* Hairline 1px em Navy 700 — o único tipo de borda do sistema. */
+  .hairline {
+    @apply border-navy-700;
+  }
+}
+
+/* ===== ESTADOS INICIAIS DE ANIMAÇÃO ===== */
+/**
+ * Os elementos animados só nascem invisíveis quando há JavaScript ativo
+ * (data-motion é escrito por script) e movimento é permitido. Se o script
+ * não executar, o atributo nunca aparece e todo o conteúdo permanece
+ * visível — um site que some quando o JS falha seria pior que um site sem
+ * animação nenhuma.
+ */
+html[data-motion="full"] [data-animate-item] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* ===== PRELOADER ===== */
+
+/* Quem pediu movimento reduzido vai direto para a hero: o preloader nem
+   chega a ser pintado, sem piscar. */
+html[data-motion="reduced"] .preloader {
+  display: none;
+}
+
+.preloader {
+  /* Rede de segurança em CSS puro: se o JavaScript não hidratar, o
+     preloader se dissolve sozinho aos 6s em vez de prender a página para
+     sempre. Quando o JS roda, ele desmonta o elemento bem antes disso. */
+  animation: preloader-failsafe 400ms linear 6s forwards;
+}
+
+@keyframes preloader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Estados iniciais em CSS, não em JS: useLayoutEffect só roda depois da
+   hidratação, e até lá o símbolo completo já teria aparecido por um
+   quadro. O dasharray é generoso de propósito — precisa apenas ser maior
+   que qualquer traço para escondê-lo; o JS mede o valor exato antes de
+   animar. */
+.preloader__symbol-stroke path,
+.preloader__orbit {
+  stroke-dasharray: 12000;
+  stroke-dashoffset: 12000;
+}
+
+.preloader__symbol-fill {
+  opacity: 0;
+}
+
+.preloader__node {
+  opacity: 0;
+}
+
+/* ===== MOVIMENTO REDUZIDO =====
+   O atributo data-motion="reduced" é escrito no <html> por um script inline
+   no <head>, antes da primeira pintura. Isso permite esconder o preloader sem
+   flash e sem divergência de hidratação — detectar via useEffect faria o
+   preloader piscar justamente para quem pediu para não ter animação. */
+
+html[data-motion="reduced"] {
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
