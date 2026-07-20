@@ -15,12 +15,8 @@
      - Sem emoji.
    =================================================================== */
 
-/**
- * TODO(nelvox): substituir pelo número comercial no formato
- * internacional apenas com dígitos (ex.: "5573999999999").
- * Enquanto estiver vazio, os CTAs caem para e-mail automaticamente.
- */
-export const WHATSAPP_NUMBER = "";
+/** Número comercial, formato internacional apenas com dígitos. */
+export const WHATSAPP_NUMBER = "5573998313910";
 
 export const EMAIL = "contato@nelvox.com.br";
 export const SITE_URL = "https://nelvox.com.br";
