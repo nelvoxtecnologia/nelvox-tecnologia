@@ -54,11 +54,13 @@ export function Preloader() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    /* Sob movimento reduzido o CSS já escondeu o preloader; aqui apenas
-       liberamos o hero imediatamente. */
+    /* Sob movimento reduzido o CSS já removeu o preloader com display:none
+       antes da primeira pintura, então não há nada a animar nem a
+       desmontar — basta liberar o hero. Não chamamos setState aqui de
+       propósito: um setState síncrono no corpo do efeito dispara um
+       render em cascata sem que nada mude na tela. */
     if (document.documentElement.dataset.motion !== "full") {
       signalPreloaderDone();
-      setIsDone(true);
       return;
     }
 
