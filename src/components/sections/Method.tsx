@@ -16,12 +16,20 @@ import { METHOD } from "@/content/site";
  * de lado é desorientador, e o ganho estético não paga o custo.
  */
 
-/** Largura e deslocamento de cada bloco no trilho (desktop). */
+/**
+ * Largura de cada bloco no trilho.
+ *
+ * Os blocos ficam alinhados pelo topo de propósito. Com deslocamentos
+ * verticais diferentes, o trilho em movimento fazia os textos subirem e
+ * descerem enquanto passavam, e a leitura virava bagunça — a assimetria
+ * que funciona parada não sobrevive ao movimento lateral. A variação
+ * ficou só nas larguras, que muda o ritmo sem desalinhar a base.
+ */
 const LAYOUT = [
-  "lg:w-[380px] lg:mt-0",
-  "lg:w-[440px] lg:mt-16",
-  "lg:w-[380px] lg:mt-6",
-  "lg:w-[420px] lg:mt-24",
+  "lg:w-[360px]",
+  "lg:w-[440px]",
+  "lg:w-[380px]",
+  "lg:w-[420px]",
 ];
 
 export function Method() {
@@ -44,19 +52,34 @@ export function Method() {
             className="mt-6 text-[clamp(30px,4vw,48px)] leading-[1.1]"
           />
         </div>
+
+        {/* Trilha de progresso do movimento lateral. Sem ela a seção
+            presa não dá pistas de quanto falta, e o scroll horizontal
+            passa a sensação de estar perdido em vez de conduzido. */}
+        <div
+          aria-hidden="true"
+          className="mt-16 hidden h-px w-[220px] bg-navy-700 lg:block"
+        >
+          <div
+            data-horizontal-progress
+            className="h-px w-full origin-left scale-x-0 bg-gold-400"
+          />
+        </div>
       </div>
 
       {/* O trilho começa alinhado à margem do container e se estende para
-          fora da tela à direita; o GSAP o desloca conforme o scroll. */}
+          fora da tela à direita; o GSAP o desloca conforme o scroll.
+          A folga final evita que o último bloco encoste na borda quando o
+          movimento termina. */}
       <ol
         data-horizontal-track
-        className="mt-20 flex flex-col px-[20px] lg:mt-28 lg:w-max lg:flex-row lg:items-start lg:gap-16 lg:px-20"
+        className="mt-20 flex flex-col px-[20px] lg:mt-28 lg:w-max lg:flex-row lg:items-start lg:gap-20 lg:pl-20 lg:pr-28"
       >
         {METHOD.items.map((item, index) => (
           <li
             key={item.number}
             data-animate-item
-            className={`mt-16 shrink-0 first:mt-0 ${LAYOUT[index]}`}
+            className={`mt-16 shrink-0 first:mt-0 lg:mt-0 ${LAYOUT[index]}`}
           >
             <div className="flex items-baseline gap-4">
               <span aria-hidden="true" className="font-body text-eyebrow text-gold-400">

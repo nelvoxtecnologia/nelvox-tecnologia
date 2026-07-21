@@ -46,26 +46,29 @@ export function ScrollReveal() {
        revert() no cleanup mata tweens, ScrollTriggers e matchMedia. */
     const ctx = gsap.context(() => {
       /**
-       * Revelação por máscara: a headline é descoberta de cima para
-       * baixo, como se estivesse sendo escrita, em vez de aparecer por
-       * fade. É o gesto que separa uma entrada genérica de uma
-       * composição tipográfica.
+       * Revelação palavra a palavra: cada palavra sobe de trás de uma
+       * máscara, em cascata. É o gesto que separa uma entrada genérica
+       * de uma composição tipográfica — a frase se monta diante do
+       * leitor em vez de simplesmente aparecer.
        *
-       * Traz opacity e y junto porque estes elementos ficam de fora do
-       * stagger comum — dois tweens disputando as mesmas propriedades no
-       * mesmo elemento produziriam saltos.
+       * O elemento fica visível de imediato porque quem estava escondido
+       * eram as palavras, não o bloco; ficar de fora do stagger comum
+       * evita dois tweens disputando as mesmas propriedades.
        */
-      const revealMask = (el: HTMLElement, delay = 0) =>
-        gsap.fromTo(
-          el,
-          { clipPath: "inset(0% 0% 100% 0%)", opacity: 1, y: 0 },
-          {
-            clipPath: "inset(0% 0% 0% 0%)",
-            duration: MASK_DURATION,
-            ease: "power3.out",
-            delay,
-          },
-        );
+      const revealMask = (el: HTMLElement, delay = 0) => {
+        const inner = el.querySelectorAll<HTMLElement>(".reveal-word__inner");
+        gsap.set(el, { opacity: 1, y: 0 });
+
+        if (inner.length === 0) return;
+
+        gsap.to(inner, {
+          y: "0%",
+          duration: MASK_DURATION,
+          ease: "power3.out",
+          stagger: 0.055,
+          delay,
+        });
+      };
 
       /* ---------- Entradas de seção ---------- */
       const sections = gsap.utils.toArray<HTMLElement>('[data-animate="section"]');
@@ -155,8 +158,14 @@ export function ScrollReveal() {
 
         /* Distância medida em função, não fixada: o ScrollTrigger a
            recalcula em cada refresh, então continua correta se as fontes
-           carregarem depois ou a janela mudar de tamanho. */
-        const overflow = () => Math.max(0, track.scrollWidth - window.innerWidth + 80);
+           carregarem depois ou a janela mudar de tamanho.
+           A folga do fim vem do padding-right do trilho — somar margem
+           aqui faria o trilho correr além do último bloco. */
+        const overflow = () => Math.max(0, track.scrollWidth - window.innerWidth);
+
+        const progress = section.querySelector<HTMLElement>(
+          "[data-horizontal-progress]",
+        );
 
         gsap.to(track, {
           x: () => -overflow(),
@@ -169,6 +178,9 @@ export function ScrollReveal() {
             scrub: 1,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              if (progress) gsap.set(progress, { scaleX: self.progress });
+            },
           },
         });
       });

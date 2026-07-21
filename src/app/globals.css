@@ -133,6 +133,32 @@ html[data-motion="reduced"] .preloader {
   opacity: 0;
 }
 
+/* ===== REVELAÇÃO PALAVRA A PALAVRA ===== */
+/**
+ * O span externo recorta, o interno desliza para dentro do recorte.
+ * `inline-block` é obrigatório: overflow não tem efeito em caixa inline.
+ *
+ * O deslocamento inicial só existe sob data-motion="full" — sem JS, ou
+ * com movimento reduzido, as palavras nascem no lugar.
+ */
+.reveal-word {
+  display: inline-block;
+  overflow: hidden;
+  /* Sem isto, descendentes como o "q" de "que" seriam cortados. */
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+  vertical-align: bottom;
+}
+
+.reveal-word__inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+html[data-motion="full"] .reveal-word__inner {
+  transform: translateY(110%);
+}
+
 /* ===== INDICADOR DE SCROLL ===== */
 /**
  * O ponto desce dentro da cápsula e reaparece no topo. Loop ambiente de

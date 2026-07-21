@@ -55,8 +55,11 @@ export type Headline = {
 /* Só existem itens que apontam para seções reais desta página.
    "Sobre" é âncora para "O que fazemos" — não há página Sobre. */
 export const NAV_ITEMS = [
-  { label: "Método", href: "#metodo" },
+  /* A ordem segue a ordem física das seções na página: "Sobre" aponta
+     para O que fazemos, que vem antes do Método. Invertida, a navegação
+     mandava o leitor para baixo e depois para cima. */
   { label: "Sobre", href: "#o-que-fazemos" },
+  { label: "Método", href: "#metodo" },
   { label: "Contato", href: "#contato" },
 ] as const;
 

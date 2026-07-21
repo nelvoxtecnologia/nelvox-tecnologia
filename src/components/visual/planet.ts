@@ -50,19 +50,137 @@ export function planetGeometry(width: number, height: number): PlanetGeometry {
 const ARC_START = Math.PI * 1.02;
 const ARC_END = Math.PI * 1.52;
 
-/** Luzes de superfície, logo por dentro da borda acesa. */
-const SURFACE_LIGHTS = [
-  { along: 0.18, inset: 0.012, size: 1.4, alpha: 0.8 },
-  { along: 0.26, inset: 0.03, size: 1.0, alpha: 0.5 },
-  { along: 0.34, inset: 0.008, size: 1.6, alpha: 0.9 },
-  { along: 0.41, inset: 0.042, size: 0.9, alpha: 0.4 },
-  { along: 0.48, inset: 0.018, size: 1.2, alpha: 0.7 },
-  { along: 0.55, inset: 0.006, size: 1.5, alpha: 0.85 },
-  { along: 0.62, inset: 0.035, size: 1.0, alpha: 0.45 },
-  { along: 0.7, inset: 0.014, size: 1.3, alpha: 0.65 },
-  { along: 0.78, inset: 0.026, size: 0.9, alpha: 0.4 },
-  { along: 0.86, inset: 0.01, size: 1.1, alpha: 0.5 },
-];
+/**
+ * Gerador pseudoaleatório com semente fixa (mulberry32).
+ *
+ * A textura precisa ser densa — a medição do mockup encontrou 1274
+ * pontos destacados — mas não pode mudar a cada redimensionamento da
+ * janela, senão a superfície "ferveria". Semente fixa garante que o
+ * mesmo planeta seja sempre desenhado.
+ */
+function makeRandom(seed: number) {
+  return () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Quanto da superfície, medido em fração do raio, ainda recebe luz.
+ *
+ * O perfil radial do mockup vai de luminância 182 na borda a 34 em 7%
+ * de profundidade e 8,6 em 16% — praticamente apagado. Daí o limite.
+ */
+const LIT_DEPTH = 0.15;
+
+/** Número de grãos e de luzes, proporcional à área realmente visível. */
+const GRAIN_COUNT = 900;
+const LIGHT_COUNT = 260;
+
+/**
+ * Textura da superfície: a faixa iluminada logo por dentro da borda.
+ *
+ * A medição do mockup mostra desvio de luminância de 25,3 numa janela de
+ * 25px logo abaixo da borda, contra 1,6 no meio do disco — ou seja, a
+ * superfície é granulada perto da luz rasante e lisa no resto. São três
+ * camadas: um degradê que apaga com a profundidade, grãos finos que dão
+ * o granulado, e luzes maiores esparsas.
+ *
+ * Tudo fica recortado ao disco e é desenhado ANTES do limbo, para não
+ * encostar no fio de luz da borda.
+ */
+function drawSurface(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  { centerX, centerY, radius }: PlanetGeometry,
+) {
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+  ctx.clip();
+
+  /* Degradê radial: luz na borda decaindo até apagar em LIT_DEPTH. Só
+     ele já reproduz o perfil medido (182 na borda, 34 em 7%, 8 em 16%). */
+  const lit = ctx.createRadialGradient(
+    centerX,
+    centerY,
+    radius * (1 - LIT_DEPTH),
+    centerX,
+    centerY,
+    radius,
+  );
+  /* Rampa curta e discreta. O perfil medido cai de 182 para 34 em 7% de
+     profundidade, então a luz precisa morrer rápido: um degradê longo
+     vira uma faixa azul chapada, que é o oposto de superfície. */
+  lit.addColorStop(0, withAlpha(OCEANO[500], 0));
+  lit.addColorStop(0.55, withAlpha(OCEANO[500], 0.015));
+  lit.addColorStop(0.82, withAlpha(OCEANO[500], 0.06));
+  lit.addColorStop(0.94, withAlpha(OCEANO[500], 0.13));
+  lit.addColorStop(1, withAlpha(OCEANO[500], 0.2));
+
+  /* Recorta no arco visível: sem isso o anel iluminado apareceria também
+     do lado escuro do corpo. */
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius, ARC_START - 0.25, ARC_END + 0.25);
+  ctx.arc(centerX, centerY, radius * (1 - LIT_DEPTH), ARC_END + 0.25, ARC_START - 0.25, true);
+  ctx.closePath();
+  ctx.fillStyle = lit;
+  ctx.fill();
+
+  const random = makeRandom(20260720);
+
+  /** Sorteia um ponto na faixa iluminada, adensando junto da borda. */
+  const pick = (depthBias: number) => {
+    const along = random();
+    const angle = ARC_START - 0.15 + (ARC_END - ARC_START + 0.3) * along;
+    /* Elevar a um expoente empurra a distribuição para perto da borda. */
+    const inset = Math.pow(random(), depthBias) * LIT_DEPTH;
+    const r = radius * (1 - inset);
+    return {
+      x: centerX + Math.cos(angle) * r,
+      y: centerY + Math.sin(angle) * r,
+      /* Some junto com a luz, para os grãos não flutuarem no escuro. */
+      fade: 1 - inset / LIT_DEPTH,
+    };
+  };
+
+  const onScreen = (x: number, y: number) =>
+    x > -8 && x < width + 8 && y > -8 && y < height + 8;
+
+  /* Grãos: o granulado de fundo. Muito pequenos e de baixa opacidade —
+     lidos como variação da superfície, não como pontos. */
+  for (let i = 0; i < GRAIN_COUNT; i++) {
+    const { x, y, fade } = pick(2.2);
+    if (!onScreen(x, y)) continue;
+    ctx.beginPath();
+    ctx.arc(x, y, 0.4 + random() * 0.7, 0, Math.PI * 2);
+    ctx.fillStyle = withAlpha(OCEANO[500], 0.1 + random() * 0.22 * fade);
+    ctx.fill();
+  }
+
+  /* Luzes: mais claras e esparsas, o que dá o brilho de superfície. */
+  for (let i = 0; i < LIGHT_COUNT; i++) {
+    const { x, y, fade } = pick(3);
+    if (!onScreen(x, y)) continue;
+    const size = 0.5 + random() * 1.1;
+    const alpha = (0.25 + random() * 0.6) * fade;
+
+    ctx.beginPath();
+    ctx.arc(x, y, size * 2.6, 0, Math.PI * 2);
+    ctx.fillStyle = withAlpha(OCEANO[500], alpha * 0.3);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fillStyle = withAlpha(PAPEL[50], alpha);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
 
 /** Rasteriza o limbo em um canvas próprio, no tamanho pedido. */
 export function renderPlanet(
@@ -113,6 +231,10 @@ export function renderPlanet(
     ctx.restore();
   };
 
+  /* A superfície entra primeiro: o limbo é desenhado por cima dela, e
+     assim o fio de luz da borda continua intacto. */
+  drawSurface(ctx, width, height, { centerX, centerY, radius });
+
   /* Três passadas somam os ~14px medidos: um halo curto, um corpo médio
      e o gume quase branco. Sem as camadas a borda leria como um traço
      desenhado por cima do fundo, e não como luz. */
@@ -126,26 +248,6 @@ export function renderPlanet(
   edge.addColorStop(0.6, withAlpha(PAPEL[50], 0.85));
   edge.addColorStop(1, withAlpha(PAPEL[50], 0));
   strokeArc(1.2, 0, edge);
-
-  /* Luzes de superfície, sempre por dentro da borda. */
-  SURFACE_LIGHTS.forEach((light) => {
-    const angle = ARC_START + (ARC_END - ARC_START) * light.along;
-    const r = radius * (1 - light.inset);
-    const x = centerX + Math.cos(angle) * r;
-    const y = centerY + Math.sin(angle) * r;
-
-    if (x < -20 || x > width + 20 || y < -20 || y > height + 20) return;
-
-    ctx.beginPath();
-    ctx.arc(x, y, light.size * 3, 0, Math.PI * 2);
-    ctx.fillStyle = withAlpha(OCEANO[500], light.alpha * 0.22);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(x, y, light.size, 0, Math.PI * 2);
-    ctx.fillStyle = withAlpha(PAPEL[50], light.alpha);
-    ctx.fill();
-  });
 
   return layer;
 }

@@ -14,6 +14,11 @@ type HeadlineProps = {
  * Centralizar isso em um componente é o que garante a regra de "máximo
  * uma palavra por headline" — o conteúdo entrega `lead` e `accent`
  * separados, então não há como grifar meia frase por descuido.
+ *
+ * Cada palavra é envolvida em dois spans: o de fora recorta, o de dentro
+ * desliza. É o que permite revelar a frase palavra a palavra, subindo de
+ * trás de uma máscara, em vez de fazer o bloco inteiro aparecer. Sem
+ * JavaScript os spans não têm efeito nenhum e o texto fica normal.
  */
 export function Headline({
   content,
@@ -22,10 +27,18 @@ export function Headline({
   ...rest
 }: HeadlineProps) {
   const Tag = as;
+  const words = content.lead.split(" ").filter(Boolean);
 
   return (
     <Tag className={`font-display font-light text-papel-300 ${className}`} {...rest}>
-      {content.lead} <em className="italic text-gold-400">{content.accent}</em>
+      {words.map((word, index) => (
+        <span key={`${word}-${index}`} className="reveal-word">
+          <span className="reveal-word__inner">{word}</span>{" "}
+        </span>
+      ))}
+      <em className="reveal-word italic text-gold-400">
+        <span className="reveal-word__inner">{content.accent}</span>
+      </em>
     </Tag>
   );
 }

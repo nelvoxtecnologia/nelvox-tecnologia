@@ -46,7 +46,12 @@ export default function RootLayout({
         <MotionScript />
         <JsonLd />
       </head>
-      <body>{children}</body>
+      {/* Extensões de navegador escrevem atributos no <body> antes do
+          React hidratar (o ColorZilla injeta cz-shortcut-listen, por
+          exemplo), e o React acusa isso como divergência de hidratação.
+          Não há nada a corrigir no código — o aviso é sobre o ambiente
+          de quem visita, então é suprimido aqui. */}
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
