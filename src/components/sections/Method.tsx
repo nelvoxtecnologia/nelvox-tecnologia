@@ -3,29 +3,25 @@ import { METHOD } from "@/content/site";
 
 /* ===== MÉTODO ===== */
 /**
- * Quatro blocos em composição deliberadamente assimétrica: larguras e
- * deslocamentos verticais diferentes entre si, para que a leitura desça
- * em zigue-zague em vez de cair no ritmo previsível de um grid 2x2
- * espelhado.
+ * Quatro blocos que atravessam a tela horizontalmente enquanto a página
+ * é rolada. A seção fica presa no lugar e o trilho corre para o lado —
+ * o movimento lateral quebra a monotonia do scroll vertical e obriga a
+ * leitura a passar por cada bloco, em vez de sobrevoá-los.
  *
- * Em telas pequenas tudo empilha na ordem numérica — assimetria em 4
- * colunas viraria só desalinhamento.
+ * A assimetria continua: cada bloco tem largura e deslocamento vertical
+ * próprios, então o trilho não lê como um carrossel de cards iguais.
+ *
+ * Em telas menores nada disso acontece — o trilho vira uma pilha e o
+ * scroll segue vertical. Prender a página no celular para mover conteúdo
+ * de lado é desorientador, e o ganho estético não paga o custo.
  */
 
-/**
- * Posição e deslocamento de cada bloco no grid de 12 colunas (desktop).
- *
- * Todos declaram o próprio `lg:mt-*`, inclusive o primeiro com zero. Se
- * o offset padrão viesse de uma classe no <li> e fosse sobrescrito aqui,
- * o resultado dependeria da ordem em que o Tailwind emite as regras —
- * duas classes de mesma especificidade, decididas por quem vem depois no
- * arquivo. Declarar por item torna isso explícito.
- */
+/** Largura e deslocamento de cada bloco no trilho (desktop). */
 const LAYOUT = [
-  "lg:col-span-5 lg:col-start-1 lg:mt-0",
-  "lg:col-span-6 lg:col-start-7 lg:mt-16",
-  "lg:col-span-5 lg:col-start-2 lg:mt-8",
-  "lg:col-span-5 lg:col-start-8 lg:mt-24",
+  "lg:w-[380px] lg:mt-0",
+  "lg:w-[440px] lg:mt-16",
+  "lg:w-[380px] lg:mt-6",
+  "lg:w-[420px] lg:mt-24",
 ];
 
 export function Method() {
@@ -33,7 +29,8 @@ export function Method() {
     <section
       id="metodo"
       data-animate="section"
-      className="scroll-mt-16 border-t hairline py-28 lg:py-48"
+      data-horizontal
+      className="scroll-mt-16 overflow-hidden border-t hairline py-28 lg:py-48"
     >
       <div className="brand-container">
         <div className="max-w-[52ch]">
@@ -43,40 +40,38 @@ export function Method() {
           <Headline
             content={METHOD.headline}
             data-animate-item
+            data-reveal="mask"
             className="mt-6 text-[clamp(30px,4vw,48px)] leading-[1.1]"
           />
         </div>
-
-        <ol className="mt-20 grid grid-cols-4 gap-gutter-mobile lg:grid-cols-brand lg:gap-gutter">
-          {METHOD.items.map((item, index) => (
-            <li
-              key={item.number}
-              data-animate-item
-              className={`col-span-4 mt-16 first:mt-0 ${LAYOUT[index]}`}
-            >
-              <div className="flex items-baseline gap-4">
-                <span
-                  aria-hidden="true"
-                  className="font-body text-eyebrow text-gold-400"
-                >
-                  {item.number}
-                </span>
-                <span
-                  aria-hidden="true"
-                  className="h-px flex-1 bg-navy-700"
-                />
-              </div>
-
-              <h3 className="mt-6 font-display text-[clamp(24px,2.6vw,32px)] font-light leading-[1.15] text-papel-300">
-                {item.title}
-              </h3>
-              <p className="mt-4 max-w-[44ch] text-body text-papel-500">
-                {item.description}
-              </p>
-            </li>
-          ))}
-        </ol>
       </div>
+
+      {/* O trilho começa alinhado à margem do container e se estende para
+          fora da tela à direita; o GSAP o desloca conforme o scroll. */}
+      <ol
+        data-horizontal-track
+        className="mt-20 flex flex-col px-[20px] lg:mt-28 lg:w-max lg:flex-row lg:items-start lg:gap-16 lg:px-20"
+      >
+        {METHOD.items.map((item, index) => (
+          <li
+            key={item.number}
+            data-animate-item
+            className={`mt-16 shrink-0 first:mt-0 ${LAYOUT[index]}`}
+          >
+            <div className="flex items-baseline gap-4">
+              <span aria-hidden="true" className="font-body text-eyebrow text-gold-400">
+                {item.number}
+              </span>
+              <span aria-hidden="true" className="h-px flex-1 bg-navy-700" />
+            </div>
+
+            <h3 className="mt-6 font-display text-[clamp(24px,2.6vw,32px)] font-light leading-[1.15] text-papel-300">
+              {item.title}
+            </h3>
+            <p className="mt-4 text-body text-papel-500">{item.description}</p>
+          </li>
+        ))}
+      </ol>
     </section>
   );
 }

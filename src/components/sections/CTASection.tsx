@@ -22,6 +22,7 @@ export function CTASection() {
         <Headline
           content={CTA_SECTION.headline}
           data-animate-item
+          data-reveal="mask"
           className="mt-6 max-w-[16ch] text-[clamp(36px,6vw,72px)] leading-[1.05]"
         />
 

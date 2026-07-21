@@ -22,6 +22,7 @@ export function WhatWeDo() {
           <Headline
             content={WHAT_WE_DO.headline}
             data-animate-item
+            data-reveal="mask"
             className="mt-6 text-[clamp(30px,4vw,48px)] leading-[1.1]"
           />
           <p

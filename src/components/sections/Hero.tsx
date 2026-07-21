@@ -20,11 +20,23 @@ export function Hero() {
       data-animate="hero"
       className="relative flex min-h-[100svh] items-center overflow-hidden pt-16"
     >
-      {/* Camada decorativa. aria-hidden porque não carrega informação:
+      {/* Camada decorativa, ocupando a tela inteira: as órbitas precisam
+          cruzar toda a composição e passar por trás da headline, como na
+          referência. aria-hidden porque não carrega informação alguma —
           descrevê-la só adicionaria ruído para leitores de tela. */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-full lg:w-[55%]">
+      <div
+        data-hero-visual
+        className="pointer-events-none absolute inset-0"
+      >
         <OrbitalCanvas />
       </div>
+
+      {/* Véu que escurece o lado esquerdo, garantindo contraste da
+          headline sobre as linhas sem apagar o motivo do lado direito. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/80 to-transparent lg:to-40%"
+      />
 
       <div className="brand-container relative z-10 grid grid-cols-4 gap-gutter-mobile lg:grid-cols-brand lg:gap-gutter">
         <div className="col-span-4 lg:col-span-8">
@@ -36,6 +48,7 @@ export function Hero() {
             as="h1"
             content={HERO.headline}
             data-animate-item
+            data-reveal="mask"
             className="mt-6 text-[clamp(38px,7.5vw,84px)] leading-[1.03] tracking-[-0.02em]"
           />
 

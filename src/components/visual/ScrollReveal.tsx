@@ -6,73 +6,183 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PRELOADER_DONE_EVENT } from "@/components/preloader/preloaderEvents";
 import { prefersReducedMotion } from "@/lib/motion";
 
-/* ===== ENTRADAS DE SEÇÃO ===== */
+/* ===== MOVIMENTO DE SCROLL ===== */
 /**
- * Orquestra as animações de scroll de toda a página a partir de um único
- * componente cliente.
+ * Orquestra as animações de scroll da página inteira a partir de um
+ * único componente cliente.
  *
- * As seções em si continuam sendo server components: elas apenas marcam
- * os elementos com data-animate-item, e a seleção acontece aqui. O
- * alternativo — transformar cada seção em client component só para poder
- * animá-la — mandaria todo o JSX das seções para o navegador sem
- * necessidade.
+ * As seções continuam sendo server components: elas só marcam elementos
+ * com data-attributes, e toda a seleção acontece aqui. O alternativo —
+ * transformar cada seção em client component para poder animá-la —
+ * mandaria todo o JSX das seções para o navegador sem necessidade.
  *
  * Este componente não renderiza nada.
  */
 
-/** Entrada de página/seção: 500ms, dentro da faixa de 400-600ms do manual. */
+/** Entrada de seção: 500ms, dentro da faixa de 400-600ms do manual. */
 const DURATION = 0.5;
 /**
  * Stagger largo o bastante para que no máximo três elementos estejam em
- * movimento simultâneo, como o manual exige. Com 0.5s de duração e 0.18s
- * de intervalo, nunca há um quarto item animando junto.
+ * movimento simultâneo, como o manual exige.
  */
 const STAGGER = 0.18;
+/** Revelação por máscara: mais lenta, é o gesto caro da composição. */
+const MASK_DURATION = 1.1;
 
 export function ScrollReveal() {
   useEffect(() => {
-    /* Sob movimento reduzido nenhuma timeline é criada. Os elementos já
-       estão visíveis pelo CSS, então não há nada a fazer. */
+    /* Sob movimento reduzido nada é criado. Os elementos já estão
+       visíveis pelo CSS, então não há o que fazer. */
     if (prefersReducedMotion()) return;
 
-    /* Garante a regra de CSS que mantém os itens invisíveis até a
-       animação. O script inline já escreveu isto, mas a hidratação do
-       React pode ter revertido o atributo — e sem ele os elementos
-       apareceriam antes de entrar. */
+    /* Garante a regra de CSS que mantém os itens invisíveis até entrarem.
+       O script inline já escreveu isto, mas a hidratação do React pode
+       tê-lo revertido. */
     document.documentElement.dataset.motion = "full";
 
     gsap.registerPlugin(ScrollTrigger);
 
-    /* gsap.context recolhe tudo que for criado dentro dele, então um
-       único revert() no cleanup mata tweens e ScrollTriggers juntos. */
+    /* gsap.context recolhe tudo criado dentro dele, então um único
+       revert() no cleanup mata tweens, ScrollTriggers e matchMedia. */
     const ctx = gsap.context(() => {
-      /* --- Seções: entram conforme o scroll --- */
-      const sections = gsap.utils.toArray<HTMLElement>(
-        '[data-animate="section"]',
-      );
+      /**
+       * Revelação por máscara: a headline é descoberta de cima para
+       * baixo, como se estivesse sendo escrita, em vez de aparecer por
+       * fade. É o gesto que separa uma entrada genérica de uma
+       * composição tipográfica.
+       *
+       * Traz opacity e y junto porque estes elementos ficam de fora do
+       * stagger comum — dois tweens disputando as mesmas propriedades no
+       * mesmo elemento produziriam saltos.
+       */
+      const revealMask = (el: HTMLElement, delay = 0) =>
+        gsap.fromTo(
+          el,
+          { clipPath: "inset(0% 0% 100% 0%)", opacity: 1, y: 0 },
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: MASK_DURATION,
+            ease: "power3.out",
+            delay,
+          },
+        );
+
+      /* ---------- Entradas de seção ---------- */
+      const sections = gsap.utils.toArray<HTMLElement>('[data-animate="section"]');
 
       sections.forEach((section) => {
-        const items = section.querySelectorAll("[data-animate-item]");
-        if (items.length === 0) return;
+        /* Os elementos com máscara saem do stagger: têm animação própria. */
+        const items = Array.from(
+          section.querySelectorAll<HTMLElement>("[data-animate-item]"),
+        ).filter((el) => el.dataset.reveal !== "mask");
 
-        gsap.to(items, {
-          opacity: 1,
-          y: 0,
-          duration: DURATION,
-          ease: "power2.out", // equivalente ao ease-out (0,0,0.2,1) do manual
-          stagger: STAGGER,
+        const masked = section.querySelectorAll<HTMLElement>('[data-reveal="mask"]');
+
+        if (items.length > 0) {
+          gsap.to(items, {
+            opacity: 1,
+            y: 0,
+            duration: DURATION,
+            ease: "power2.out", // equivalente ao ease-out (0,0,0.2,1) do manual
+            stagger: STAGGER,
+            scrollTrigger: { trigger: section, start: "top 75%", once: true },
+          });
+        }
+
+        masked.forEach((el) => {
+          ScrollTrigger.create({
+            trigger: el,
+            start: "top 85%",
+            once: true,
+            onEnter: () => revealMask(el),
+          });
+        });
+      });
+
+      /* ---------- Parallax ----------
+         Amplitude pequena de propósito: o suficiente para dar camada, não
+         para chamar atenção para si mesmo. */
+      const parallax = gsap.utils.toArray<HTMLElement>("[data-parallax]");
+
+      parallax.forEach((el) => {
+        const distance = Number(el.dataset.parallax) || 60;
+        gsap.fromTo(
+          el,
+          { y: distance },
+          {
+            y: -distance,
+            ease: "none",
+            scrollTrigger: {
+              trigger: el,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          },
+        );
+      });
+
+      /* ---------- Saída do hero ----------
+         O motivo orbital afunda e desaparece conforme a página sai do
+         hero, em vez de simplesmente rolar para fora junto com o resto. */
+      const heroVisual = document.querySelector<HTMLElement>("[data-hero-visual]");
+      const hero = document.querySelector<HTMLElement>('[data-animate="hero"]');
+
+      if (heroVisual && hero) {
+        gsap.to(heroVisual, {
+          y: 120,
+          opacity: 0.15,
+          ease: "none",
+          scrollTrigger: {
+            trigger: hero,
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+          },
+        });
+      }
+
+      /* ---------- Scroll lateral do Método ----------
+         Só em desktop: prender a página no celular para mover conteúdo de
+         lado é desorientador. gsap.matchMedia cuida de criar e destruir
+         conforme a largura muda. */
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 1024px)", () => {
+        const section = document.querySelector<HTMLElement>("[data-horizontal]");
+        const track = document.querySelector<HTMLElement>("[data-horizontal-track]");
+        if (!section || !track) return;
+
+        /* Distância medida em função, não fixada: o ScrollTrigger a
+           recalcula em cada refresh, então continua correta se as fontes
+           carregarem depois ou a janela mudar de tamanho. */
+        const overflow = () => Math.max(0, track.scrollWidth - window.innerWidth + 80);
+
+        gsap.to(track, {
+          x: () => -overflow(),
+          ease: "none",
           scrollTrigger: {
             trigger: section,
-            start: "top 75%",
-            once: true,
+            start: "top top",
+            end: () => `+=${overflow()}`,
+            pin: true,
+            scrub: 1,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
           },
         });
       });
 
-      /* --- Hero: entra na abertura da página, não por scroll --- */
-      const heroItems = document.querySelectorAll(
-        '[data-animate="hero"] [data-animate-item]',
+      /* ---------- Hero na abertura ----------
+         Entra quando o preloader sai, para as duas animações não
+         disputarem a atenção. */
+      const heroAll = Array.from(
+        document.querySelectorAll<HTMLElement>(
+          '[data-animate="hero"] [data-animate-item]',
+        ),
       );
+      const heroItems = heroAll.filter((el) => el.dataset.reveal !== "mask");
+      const heroMasked = heroAll.filter((el) => el.dataset.reveal === "mask");
 
       const revealHero = () => {
         gsap.to(heroItems, {
@@ -82,15 +192,27 @@ export function ScrollReveal() {
           ease: "power2.out",
           stagger: STAGGER,
         });
+        /* A headline entra logo após o eyebrow, com a máscara mais lenta
+           puxando o olho para ela antes do resto do bloco. */
+        heroMasked.forEach((el) => revealMask(el, STAGGER));
       };
 
-      /* O hero só entra quando o preloader sai, para as duas animações
-         não disputarem a atenção. Se o preloader já terminou (ou nunca
-         existiu), entra imediatamente. */
-      if (document.documentElement.dataset.preloader === "done") {
+      /**
+       * Enquanto o preloader está na tela o body fica com overflow
+       * travado, então todo ScrollTrigger criado até aqui mediu a página
+       * sem rolagem — inclusive o pin do Método, cujas distâncias
+       * dependem da altura real do documento. Recalcular na saída é o
+       * que impede a seção lateral de prender no ponto errado.
+       */
+      const onPreloaderDone = () => {
         revealHero();
+        ScrollTrigger.refresh();
+      };
+
+      if (document.documentElement.dataset.preloader === "done") {
+        onPreloaderDone();
       } else {
-        window.addEventListener(PRELOADER_DONE_EVENT, revealHero, {
+        window.addEventListener(PRELOADER_DONE_EVENT, onPreloaderDone, {
           once: true,
         });
       }

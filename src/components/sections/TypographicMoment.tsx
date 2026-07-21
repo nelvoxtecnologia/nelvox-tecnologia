@@ -23,10 +23,13 @@ export function TypographicMoment() {
           id="momento-tagline"
           content={TYPOGRAPHIC_MOMENT.headline}
           data-animate-item
+          data-reveal="mask"
+          data-parallax="40"
           className="max-w-[14ch] text-[clamp(56px,13vw,168px)] leading-[0.95] tracking-[-0.03em]"
         />
         <p
           data-animate-item
+          data-parallax="20"
           className="mt-12 max-w-[40ch] text-body text-papel-500 lg:ml-auto lg:mt-16"
         >
           {TYPOGRAPHIC_MOMENT.support}
