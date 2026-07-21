@@ -15,10 +15,13 @@ import { HERO } from "@/content/site";
  */
 export function Hero() {
   return (
+    /* Navy 950 e não o Navy 900 do resto da página: o mockup de
+       referência tem o hero em rgb(0,6,16), quase preto, e é esse fundo
+       fundo que faz o fio de luz do limbo ter presença. */
     <section
       id="topo"
       data-animate="hero"
-      className="relative flex min-h-[100svh] items-center overflow-hidden pt-16"
+      className="relative flex min-h-[100svh] items-center overflow-hidden bg-navy-950 pt-16"
     >
       {/* Camada decorativa, ocupando a tela inteira: as órbitas precisam
           cruzar toda a composição e passar por trás da headline, como na
@@ -31,15 +34,19 @@ export function Hero() {
         <OrbitalCanvas />
       </div>
 
-      {/* Véu que escurece o lado esquerdo, garantindo contraste da
-          headline sobre as linhas sem apagar o motivo do lado direito. */}
+      {/* Véu discreto sob a headline. Curto e de baixa opacidade: com o
+          limbo reduzido ao fio medido na referência, o motivo não invade
+          mais o texto, e um véu forte só apagaria as linhas orbitais. */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/80 to-transparent lg:to-40%"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/70 via-30% to-transparent to-55%"
       />
 
       <div className="brand-container relative z-10 grid grid-cols-4 gap-gutter-mobile lg:grid-cols-brand lg:gap-gutter">
-        <div className="col-span-4 lg:col-span-8">
+        {/* Seis das doze colunas: na referência o bloco de texto ocupa
+            cerca de 47% da largura, e deixar o resto vazio é o que dá ao
+            motivo espaço para existir. */}
+        <div className="col-span-4 lg:col-span-6">
           <p data-animate-item className="eyebrow">
             {HERO.eyebrow}
           </p>
@@ -49,7 +56,7 @@ export function Hero() {
             content={HERO.headline}
             data-animate-item
             data-reveal="mask"
-            className="mt-6 text-[clamp(38px,7.5vw,84px)] leading-[1.03] tracking-[-0.02em]"
+            className="mt-6 text-[clamp(34px,4.8vw,72px)] leading-[1.06] tracking-[-0.02em]"
           />
 
           <p
@@ -79,13 +86,19 @@ export function Hero() {
         <div className="brand-container">
           <a
             href="#o-que-fazemos"
-            className="inline-flex items-center gap-4 text-papel-700 transition-colors duration-ui ease-brand-in-out hover:text-papel-500"
+            className="group inline-flex items-center gap-4 text-papel-700 transition-colors duration-ui ease-brand-in-out hover:text-papel-500"
           >
+            {/* Cápsula com um ponto descendo em loop. É o único loop
+                infinito da página, e está num elemento decorativo — o
+                manual proíbe loop em conteúdo, não em um indicador cuja
+                função é justamente insistir. */}
             <span
               aria-hidden="true"
-              className="block h-8 w-px bg-navy-700"
-            />
-            <span className="font-body text-eyebrow uppercase">
+              className="relative block h-10 w-6 shrink-0 rounded-full border hairline"
+            >
+              <span className="scroll-cue__dot absolute left-1/2 top-2 h-1 w-1 -translate-x-1/2 rounded-full bg-oceano-500" />
+            </span>
+            <span className="font-body text-eyebrow uppercase transition-colors duration-ui ease-brand-in-out group-hover:text-gold-400">
               {HERO.scrollHint}
             </span>
           </a>

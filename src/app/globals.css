@@ -133,6 +133,36 @@ html[data-motion="reduced"] .preloader {
   opacity: 0;
 }
 
+/* ===== INDICADOR DE SCROLL ===== */
+/**
+ * O ponto desce dentro da cápsula e reaparece no topo. Loop ambiente de
+ * 2,4s — acima da faixa de micro-interação porque o gesto precisa ser
+ * lido como convite, não como aviso.
+ *
+ * A regra de reduced-motion mais abaixo zera esta animação junto com as
+ * demais.
+ */
+.scroll-cue__dot {
+  animation: scroll-cue 2400ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes scroll-cue {
+  0% {
+    transform: translate(-50%, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, 20px);
+    opacity: 0;
+  }
+}
+
 /* ===== MOVIMENTO REDUZIDO =====
    O atributo data-motion="reduced" é escrito no <html> por um script inline
    no <head>, antes da primeira pintura. Isso permite esconder o preloader sem

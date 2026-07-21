@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { GOLD, OCEANO, PAPEL, withAlpha } from "@/tokens/brand";
 import { prefersReducedMotion } from "@/lib/motion";
-import { planetGeometry, renderPlanet } from "./planet";
+import { renderPlanet } from "./planet";
 
 /* ===== MOTIVO ORBITAL ===== */
 /**
@@ -28,7 +28,10 @@ import { planetGeometry, renderPlanet } from "./planet";
 const SYMBOL_AXIS = (-56 * Math.PI) / 180;
 
 type Orbit = {
-  /** Raio maior, relativo à maior dimensão do canvas. */
+  /** Centro do arco, em fração da largura e da altura do canvas. */
+  cx: number;
+  cy: number;
+  /** Raio maior, relativo à largura do canvas. */
   radius: number;
   /** Achatamento: 1 é círculo, valores menores achatam como as foices. */
   flatten: number;
@@ -43,11 +46,21 @@ type Orbit = {
   weight: number;
 };
 
+/**
+ * Cada órbita tem centro próprio, e é isso que produz a malha de linhas
+ * que se cruzam da referência. Quando todas partiam do mesmo centro, os
+ * arcos saíam praticamente paralelos e a composição ficava inerte.
+ *
+ * A primeira acompanha o centro do planeta; as demais entram por cima,
+ * pela direita e por baixo. Os valores foram conferidos rasterizando a
+ * geometria fora do navegador e comparando o enquadramento com o mockup.
+ */
 const ORBITS: Orbit[] = [
-  { radius: 0.95, flatten: 0.62, tilt: 0, arcStart: -0.15, arcEnd: Math.PI * 1.15, speed: 0.012, alpha: 0.5, weight: 1 },
-  { radius: 0.72, flatten: 0.78, tilt: 0.42, arcStart: Math.PI * 0.15, arcEnd: Math.PI * 1.5, speed: -0.018, alpha: 0.38, weight: 0.9 },
-  { radius: 1.24, flatten: 0.5, tilt: -0.34, arcStart: Math.PI * 0.35, arcEnd: Math.PI * 1.25, speed: 0.008, alpha: 0.3, weight: 0.8 },
-  { radius: 1.55, flatten: 0.42, tilt: 0.22, arcStart: Math.PI * 0.5, arcEnd: Math.PI * 1.32, speed: -0.006, alpha: 0.2, weight: 0.8 },
+  { cx: 1.28, cy: 1.13, radius: 0.95, flatten: 0.88, tilt: 0, arcStart: Math.PI * 0.72, arcEnd: Math.PI * 1.6, speed: 0.01, alpha: 0.5, weight: 1 },
+  { cx: 0.62, cy: -0.5, radius: 0.9, flatten: 0.8, tilt: 0.9, arcStart: Math.PI * 0.1, arcEnd: Math.PI * 0.95, speed: -0.013, alpha: 0.42, weight: 0.9 },
+  { cx: 1.55, cy: 0.15, radius: 1.05, flatten: 0.72, tilt: -0.5, arcStart: Math.PI * 0.55, arcEnd: Math.PI * 1.35, speed: 0.008, alpha: 0.38, weight: 0.9 },
+  { cx: 0.05, cy: 1.6, radius: 1.15, flatten: 0.85, tilt: 0.35, arcStart: Math.PI * 1.55, arcEnd: Math.PI * 2.25, speed: -0.006, alpha: 0.3, weight: 0.8 },
+  { cx: 1.1, cy: 1.5, radius: 1.35, flatten: 0.65, tilt: -0.2, arcStart: Math.PI * 0.95, arcEnd: Math.PI * 1.55, speed: 0.005, alpha: 0.22, weight: 0.8 },
 ];
 
 /**
@@ -56,15 +69,18 @@ const ORBITS: Orbit[] = [
  * Os `tech` usam Oceano Digital e ganham flare maior — são os que a
  * referência coloca sobre o limbo do planeta. Os demais são Gold, e
  * fazem o contraponto quente das linhas.
+ *
+ * Os ângulos caem dentro do trecho de cada arco que realmente entra no
+ * quadro; foram levantados varrendo cada órbita, não estimados.
  */
 const NODES = [
-  { orbit: 0, angle: 0.35, size: 2.6, tech: false, flare: 1 },
-  { orbit: 0, angle: 2.1, size: 1.8, tech: false, flare: 0.6 },
-  { orbit: 1, angle: 0.9, size: 3.2, tech: true, flare: 1.5 },
-  { orbit: 1, angle: 3.4, size: 2, tech: false, flare: 0.7 },
-  { orbit: 2, angle: 1.6, size: 2.2, tech: false, flare: 0.8 },
-  { orbit: 2, angle: 3.05, size: 2.8, tech: true, flare: 1.3 },
-  { orbit: 3, angle: 2.4, size: 1.6, tech: false, flare: 0.5 },
+  { orbit: 0, angle: 4.45, size: 2.4, tech: false, flare: 1 },
+  { orbit: 0, angle: 4.9, size: 1.7, tech: false, flare: 0.6 },
+  { orbit: 1, angle: 1.5, size: 1.9, tech: false, flare: 0.7 },
+  { orbit: 1, angle: 2.1, size: 3, tech: true, flare: 1.6 },
+  { orbit: 2, angle: 4.18, size: 2.6, tech: true, flare: 1.4 },
+  { orbit: 3, angle: 5.6, size: 2, tech: false, flare: 0.8 },
+  { orbit: 3, angle: 6.1, size: 1.6, tech: false, flare: 0.5 },
 ];
 
 /** Poeira de fundo: posições fixas em coordenadas normalizadas. */
@@ -167,13 +183,9 @@ export function OrbitalCanvas() {
         ctx.drawImage(planetLayer, 0, 0, width, height);
       }
 
-      /* As órbitas orbitam o planeta, então compartilham o centro dele —
-         é o que faz as linhas parecerem presas ao corpo em vez de
-         flutuarem por cima. */
-      const planet = planetGeometry(width, height);
-      const centerX = planet.centerX - planet.radius * 0.34;
-      const centerY = planet.centerY;
-      const scale = Math.max(width, height);
+      /* A escala é a largura, não a maior dimensão: os raios foram
+         calibrados para atravessar a tela horizontalmente. */
+      const scale = width;
 
       ORBITS.forEach((orbit) => {
         const rx = scale * orbit.radius;
@@ -181,7 +193,15 @@ export function OrbitalCanvas() {
         const rotation = SYMBOL_AXIS + orbit.tilt + elapsed * orbit.speed;
 
         ctx.beginPath();
-        ctx.ellipse(centerX, centerY, rx, ry, rotation, orbit.arcStart, orbit.arcEnd);
+        ctx.ellipse(
+          width * orbit.cx,
+          height * orbit.cy,
+          rx,
+          ry,
+          rotation,
+          orbit.arcStart,
+          orbit.arcEnd,
+        );
         ctx.strokeStyle = withAlpha(GOLD[400], orbit.alpha);
         ctx.lineWidth = orbit.weight;
         ctx.stroke();
@@ -204,8 +224,10 @@ export function OrbitalCanvas() {
         /* Ponto sobre a elipse, depois rotacionado junto com ela. */
         const localX = Math.cos(angle) * rx;
         const localY = Math.sin(angle) * ry;
-        const x = centerX + localX * Math.cos(rotation) - localY * Math.sin(rotation);
-        const y = centerY + localX * Math.sin(rotation) + localY * Math.cos(rotation);
+        const cx = width * orbit.cx;
+        const cy = height * orbit.cy;
+        const x = cx + localX * Math.cos(rotation) - localY * Math.sin(rotation);
+        const y = cy + localX * Math.sin(rotation) + localY * Math.cos(rotation);
 
         /* Respiração dessincronizada, para nenhum par pulsar em uníssono. */
         const pulse = 0.82 + 0.18 * Math.sin(elapsed * 0.9 + index * 1.7);

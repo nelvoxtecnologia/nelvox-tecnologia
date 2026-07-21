@@ -34,9 +34,14 @@ export function CtaLink({
     lg: "px-8 py-4 text-[16px]",
   };
 
+  /* O primário é um degradê de Papel para Gold na diagonal, como no
+     mockup de referência — o metal só lê como metal quando tem variação
+     de luz na superfície. O manual proíbe gradiente em campos de fundo,
+     não em controles. */
   const variants = {
     primary:
-      "bg-gold-400 text-navy-950 border border-gold-400 hover:bg-gold-300 hover:border-gold-300",
+      "border border-gold-300 bg-gradient-to-br from-papel-100 via-gold-300 to-gold-500 text-navy-950 " +
+      "hover:from-papel-50 hover:via-gold-200 hover:to-gold-400",
     secondary:
       "bg-transparent text-gold-400 border border-gold-400 hover:bg-gold-400 hover:text-navy-950",
   };

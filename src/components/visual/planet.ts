@@ -1,46 +1,28 @@
-import { NAVY, OCEANO, PAPEL, withAlpha } from "@/tokens/brand";
+import { OCEANO, PAPEL, withAlpha } from "@/tokens/brand";
 
 /* ===== CORPO PLANETÁRIO ===== */
 /**
- * Desenha o planeta do hero em um canvas fora de tela, uma única vez.
+ * Desenha o limbo do planeta do hero em um canvas fora de tela.
  *
- * O motivo de existir separado: o limbo depende de `shadowBlur` com raio
- * alto, que é a operação mais cara do Canvas 2D. Pagá-la a 60fps
- * derrubaria a taxa de quadros em celular — mas o planeta não se move.
- * Só as órbitas e os pontos animam, então o corpo é rasterizado uma vez
- * e daí em diante é só um `drawImage`.
+ * A geometria e a intensidade não foram estimadas: foram medidas no
+ * mockup de referência da marca (Assets/Nelvox Site - Home.jpeg,
+ * 1536x1024). Os números que importam de lá:
  *
- * Ele é redesenhado apenas quando o canvas muda de tamanho.
+ *   - centro do círculo em (1.283·largura, 1.129·altura) — bem abaixo e
+ *     à direita, fora do quadro;
+ *   - raio de 0.691·largura, o que põe a borda visível em x ≈ 59%;
+ *   - o brilho tem 14px de largura a meia altura, ou seja 0.9% da
+ *     largura da tela. É um fio, não uma faixa;
+ *   - o interior do disco é rgb(0,12,24), praticamente igual ao fundo
+ *     rgb(0,6,16). O planeta não tem massa visível — só a borda acesa;
+ *   - o pico do brilho é quase branco (rgb 208,255,255) e decai para um
+ *     ciano fosco nas pontas do arco.
+ *
+ * Fica em módulo separado porque o glow depende de `shadowBlur`, a
+ * operação mais cara do Canvas 2D. O corpo não se move, então é
+ * rasterizado uma vez e daí em diante é só `drawImage` — só as órbitas e
+ * os pontos animam.
  */
-
-/** Luzes na superfície, em coordenadas polares relativas ao disco. */
-type SurfaceLight = {
-  /** Ângulo em radianos, medido a partir do limbo. */
-  angle: number;
-  /** Distância do centro, de 0 a 1. */
-  distance: number;
-  size: number;
-  alpha: number;
-};
-
-/**
- * Concentradas perto da borda visível, onde a curvatura as comprime —
- * é isso que faz o disco parecer esférico e não um círculo chapado.
- */
-const SURFACE_LIGHTS: SurfaceLight[] = [
-  { angle: 2.72, distance: 0.965, size: 1.5, alpha: 0.95 },
-  { angle: 2.98, distance: 0.94, size: 1.1, alpha: 0.8 },
-  { angle: 3.32, distance: 0.975, size: 1.7, alpha: 0.9 },
-  { angle: 3.55, distance: 0.93, size: 1.0, alpha: 0.65 },
-  { angle: 2.45, distance: 0.985, size: 1.3, alpha: 0.85 },
-  { angle: 3.86, distance: 0.955, size: 1.4, alpha: 0.7 },
-  { angle: 2.2, distance: 0.945, size: 0.9, alpha: 0.6 },
-  { angle: 3.1, distance: 0.9, size: 1.2, alpha: 0.55 },
-  { angle: 3.45, distance: 0.885, size: 0.9, alpha: 0.45 },
-  { angle: 2.62, distance: 0.905, size: 1.0, alpha: 0.5 },
-  { angle: 4.05, distance: 0.975, size: 1.1, alpha: 0.6 },
-  { angle: 2.05, distance: 0.97, size: 1.0, alpha: 0.55 },
-];
 
 export type PlanetGeometry = {
   centerX: number;
@@ -49,20 +31,40 @@ export type PlanetGeometry = {
 };
 
 /**
- * Onde o corpo fica: centro fora da tela à direita, de modo que apenas o
- * flanco esquerdo entre em quadro. É o enquadramento da referência — a
- * escala é sugerida justamente pelo que não cabe.
+ * Onde o corpo fica. As proporções vêm da medição do mockup; em telas
+ * em retrato o raio passa a acompanhar a altura, senão o arco sairia
+ * quase todo do quadro no celular.
  */
 export function planetGeometry(width: number, height: number): PlanetGeometry {
-  const radius = Math.max(width, height) * 0.78;
+  const portrait = height > width;
+  const radius = portrait ? height * 0.62 : width * 0.691;
+
   return {
-    centerX: width + radius * 0.42,
-    centerY: height * 0.52,
+    centerX: portrait ? width + radius * 0.52 : width * 1.283,
+    centerY: portrait ? height * 1.02 : height * 1.129,
     radius,
   };
 }
 
-/** Rasteriza o corpo inteiro em um canvas próprio, no tamanho pedido. */
+/** Trecho do arco que chega a entrar no quadro, com folga nas pontas. */
+const ARC_START = Math.PI * 1.02;
+const ARC_END = Math.PI * 1.52;
+
+/** Luzes de superfície, logo por dentro da borda acesa. */
+const SURFACE_LIGHTS = [
+  { along: 0.18, inset: 0.012, size: 1.4, alpha: 0.8 },
+  { along: 0.26, inset: 0.03, size: 1.0, alpha: 0.5 },
+  { along: 0.34, inset: 0.008, size: 1.6, alpha: 0.9 },
+  { along: 0.41, inset: 0.042, size: 0.9, alpha: 0.4 },
+  { along: 0.48, inset: 0.018, size: 1.2, alpha: 0.7 },
+  { along: 0.55, inset: 0.006, size: 1.5, alpha: 0.85 },
+  { along: 0.62, inset: 0.035, size: 1.0, alpha: 0.45 },
+  { along: 0.7, inset: 0.014, size: 1.3, alpha: 0.65 },
+  { along: 0.78, inset: 0.026, size: 0.9, alpha: 0.4 },
+  { along: 0.86, inset: 0.01, size: 1.1, alpha: 0.5 },
+];
+
+/** Rasteriza o limbo em um canvas próprio, no tamanho pedido. */
 export function renderPlanet(
   width: number,
   height: number,
@@ -78,98 +80,71 @@ export function renderPlanet(
 
   const { centerX, centerY, radius } = planetGeometry(width, height);
 
-  /* --- Atmosfera: halo azul que extravasa o disco ---
-     Desenhado antes do corpo para ficar por baixo da silhueta. */
-  const atmosphere = ctx.createRadialGradient(
-    centerX,
-    centerY,
-    radius * 0.93,
-    centerX,
-    centerY,
-    radius * 1.16,
-  );
-  atmosphere.addColorStop(0, withAlpha(OCEANO[500], 0.34));
-  atmosphere.addColorStop(0.45, withAlpha(OCEANO[500], 0.1));
-  atmosphere.addColorStop(1, withAlpha(OCEANO[500], 0));
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius * 1.16, 0, Math.PI * 2);
-  ctx.fillStyle = atmosphere;
-  ctx.fill();
+  /**
+   * Intensidade ao longo do arco. Na referência o brilho é forte no
+   * miolo vertical e some nas duas pontas, o que faz a luz parecer
+   * rasante em vez de um contorno desenhado.
+   */
+  const falloff = (alpha: number) => {
+    const g = ctx.createLinearGradient(0, height * 0.05, 0, height);
+    g.addColorStop(0, withAlpha(OCEANO[500], 0));
+    g.addColorStop(0.22, withAlpha(OCEANO[500], alpha));
+    g.addColorStop(0.62, withAlpha(OCEANO[500], alpha));
+    g.addColorStop(1, withAlpha(OCEANO[500], 0));
+    return g;
+  };
 
-  /* --- Massa do corpo ---
-     Mais escura que o fundo da página, para o disco existir como volume
-     sólido contra o Navy da seção. */
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-  ctx.fillStyle = NAVY[950];
-  ctx.fill();
+  const strokeArc = (
+    lineWidth: number,
+    blur: number,
+    stroke: string | CanvasGradient,
+    blurColor?: string,
+  ) => {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, ARC_START, ARC_END);
+    if (blur > 0) {
+      ctx.shadowColor = blurColor ?? withAlpha(OCEANO[500], 0.8);
+      ctx.shadowBlur = blur;
+    }
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+    ctx.restore();
+  };
 
-  /* --- Luz rasante interna ---
-     Um brilho que decai rápido a partir da borda iluminada, criando o
-     terminador entre o lado aceso e o lado escuro. */
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-  ctx.clip();
+  /* Três passadas somam os ~14px medidos: um halo curto, um corpo médio
+     e o gume quase branco. Sem as camadas a borda leria como um traço
+     desenhado por cima do fundo, e não como luz. */
+  strokeArc(3, 18, falloff(0.3));
+  strokeArc(1.8, 7, falloff(0.6));
 
-  const terminator = ctx.createRadialGradient(
-    centerX - radius * 0.98,
-    centerY,
-    0,
-    centerX - radius * 0.98,
-    centerY,
-    radius * 0.92,
-  );
-  terminator.addColorStop(0, withAlpha(OCEANO[500], 0.5));
-  terminator.addColorStop(0.18, withAlpha(OCEANO[500], 0.16));
-  terminator.addColorStop(0.5, withAlpha(OCEANO[500], 0.03));
-  terminator.addColorStop(1, withAlpha(OCEANO[500], 0));
-  ctx.fillStyle = terminator;
-  ctx.fillRect(centerX - radius, centerY - radius, radius * 2, radius * 2);
+  /* Gume: o pico medido é quase branco, não ciano. */
+  const edge = ctx.createLinearGradient(0, height * 0.05, 0, height);
+  edge.addColorStop(0, withAlpha(PAPEL[50], 0));
+  edge.addColorStop(0.24, withAlpha(PAPEL[50], 0.9));
+  edge.addColorStop(0.6, withAlpha(PAPEL[50], 0.85));
+  edge.addColorStop(1, withAlpha(PAPEL[50], 0));
+  strokeArc(1.2, 0, edge);
 
-  /* --- Luzes de superfície ---
-     Ainda dentro do clip do disco, então nenhuma escapa da silhueta. */
+  /* Luzes de superfície, sempre por dentro da borda. */
   SURFACE_LIGHTS.forEach((light) => {
-    const x = centerX + Math.cos(light.angle) * radius * light.distance;
-    const y = centerY + Math.sin(light.angle) * radius * light.distance;
+    const angle = ARC_START + (ARC_END - ARC_START) * light.along;
+    const r = radius * (1 - light.inset);
+    const x = centerX + Math.cos(angle) * r;
+    const y = centerY + Math.sin(angle) * r;
+
+    if (x < -20 || x > width + 20 || y < -20 || y > height + 20) return;
 
     ctx.beginPath();
-    ctx.arc(x, y, light.size * 2.6, 0, Math.PI * 2);
-    ctx.fillStyle = withAlpha(OCEANO[500], light.alpha * 0.25);
+    ctx.arc(x, y, light.size * 3, 0, Math.PI * 2);
+    ctx.fillStyle = withAlpha(OCEANO[500], light.alpha * 0.22);
     ctx.fill();
 
     ctx.beginPath();
     ctx.arc(x, y, light.size, 0, Math.PI * 2);
     ctx.fillStyle = withAlpha(PAPEL[50], light.alpha);
     ctx.fill();
-  });
-
-  ctx.restore();
-
-  /* --- Limbo ---
-     O fio de luz na borda. Três passadas de espessura decrescente: as
-     largas e borradas fazem o brilho, a fina e clara faz o gume. Sem as
-     camadas, a borda leria como um traço desenhado por cima do fundo. */
-  const limbArcStart = Math.PI * 0.58;
-  const limbArcEnd = Math.PI * 1.44;
-
-  const passes = [
-    { width: radius * 0.055, blur: radius * 0.13, color: OCEANO[500], alpha: 0.5 },
-    { width: radius * 0.018, blur: radius * 0.06, color: OCEANO[500], alpha: 0.85 },
-    { width: 1.5, blur: radius * 0.02, color: PAPEL[50], alpha: 0.95 },
-  ];
-
-  passes.forEach((pass) => {
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, limbArcStart, limbArcEnd);
-    ctx.shadowColor = withAlpha(pass.color, 0.9);
-    ctx.shadowBlur = pass.blur;
-    ctx.strokeStyle = withAlpha(pass.color, pass.alpha);
-    ctx.lineWidth = pass.width;
-    ctx.lineCap = "round";
-    ctx.stroke();
-    ctx.restore();
   });
 
   return layer;
