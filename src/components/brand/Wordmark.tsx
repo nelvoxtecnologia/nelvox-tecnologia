@@ -25,11 +25,11 @@ export function Wordmark({
   const toneClass = tone === "gold" ? "text-gold-400" : "text-papel-300";
 
   return (
-    <span className={`inline-flex items-center gap-2 ${toneClass} ${className}`}>
+    <span className={`inline-flex items-center gap-[10px] lg:gap-[12px] ${toneClass} ${className}`}>
       {!textOnly && (
-        <NelvoxSymbol className="h-6 w-6 shrink-0 text-gold-400" />
+        <NelvoxSymbol className="h-[20px] w-[20px] shrink-0 lg:h-[22px] lg:w-[22px]" />
       )}
-      <span className="wordmark text-[15px] leading-none">NELVOX</span>
+      <span className="wordmark text-[12px] font-medium leading-none lg:text-[14px]">NELVOX</span>
     </span>
   );
 }

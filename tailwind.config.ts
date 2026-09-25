@@ -88,6 +88,18 @@ const config: Config = {
           "56px",
           { letterSpacing: "-1.5px", lineHeight: "1.0", fontWeight: "300" },
         ],
+
+        /* Escala das 6 cenas do handoff "Farol" — desktop/mobile via
+           responsive modifiers no JSX, não em tokens separados. */
+        "display-xl": ["84px", { letterSpacing: "-1.5px", lineHeight: "1.0", fontWeight: "300" }],
+        "display-xl-mobile": ["44px", { letterSpacing: "-1px", lineHeight: "1", fontWeight: "300" }],
+        "display-l": ["66px", { letterSpacing: "-1.2px", lineHeight: "1.02", fontWeight: "300" }],
+        "display-l-mobile": ["40px", { letterSpacing: "-0.8px", lineHeight: "1.04", fontWeight: "300" }],
+        mission: ["62px", { letterSpacing: "-1px", lineHeight: "1.12", fontWeight: "300" }],
+        "mission-mobile": ["32px", { letterSpacing: "-0.4px", lineHeight: "1.18", fontWeight: "300" }],
+        "card-title": ["44px", { letterSpacing: "0px", lineHeight: "1", fontWeight: "400" }],
+        "card-title-mobile": ["34px", { letterSpacing: "0px", lineHeight: "1", fontWeight: "400" }],
+        "display-cta-mobile": ["46px", { letterSpacing: "-1px", lineHeight: "1", fontWeight: "300" }],
       },
 
       letterSpacing: {

@@ -17,7 +17,10 @@
   }
 
   body {
-    @apply bg-navy-900 text-papel-300 font-body text-body antialiased;
+    /* Navy 950: a Cena 1 (farol apagado) é a primeira coisa que a página
+       pinta. O restante das cenas muda esta cor via GSAP (ver HomeScroll) —
+       nenhuma seção tem fundo opaco próprio (ver README do handoff). */
+    @apply bg-navy-950 text-papel-300 font-body text-body antialiased;
     /* Evita que qualquer overflow horizontal acidental gere scroll lateral. */
     overflow-x: hidden;
   }
@@ -27,7 +30,7 @@
   h2,
   h3 {
     @apply font-display font-light;
-    text-wrap: balance;
+    text-wrap: pretty;
   }
 
   p {
@@ -79,19 +82,6 @@
   }
 }
 
-/* ===== ESTADOS INICIAIS DE ANIMAÇÃO ===== */
-/**
- * Os elementos animados só nascem invisíveis quando há JavaScript ativo
- * (data-motion é escrito por script) e movimento é permitido. Se o script
- * não executar, o atributo nunca aparece e todo o conteúdo permanece
- * visível — um site que some quando o JS falha seria pior que um site sem
- * animação nenhuma.
- */
-html[data-motion="full"] [data-animate-item] {
-  opacity: 0;
-  transform: translateY(24px);
-}
-
 /* ===== PRELOADER ===== */
 
 /* Quem pediu movimento reduzido vai direto para a hero: o preloader nem
@@ -133,60 +123,58 @@ html[data-motion="reduced"] .preloader {
   opacity: 0;
 }
 
-/* ===== REVELAÇÃO PALAVRA A PALAVRA ===== */
-/**
- * O span externo recorta, o interno desliza para dentro do recorte.
- * `inline-block` é obrigatório: overflow não tem efeito em caixa inline.
- *
- * O deslocamento inicial só existe sob data-motion="full" — sem JS, ou
- * com movimento reduzido, as palavras nascem no lugar.
- */
-.reveal-word {
-  display: inline-block;
-  overflow: hidden;
-  /* Sem isto, descendentes como o "q" de "que" seriam cortados. */
-  padding-bottom: 0.12em;
-  margin-bottom: -0.12em;
-  vertical-align: bottom;
+/* ===== FAROL — HINT "TOQUE NO FAROL" =====
+   Só o anel pulsa (opacidade, 3.6s). O texto nunca entra em loop —
+   proibido pelo briefing. */
+.farol-hint__ring {
+  animation: farol-hint-pulse 3600ms ease-in-out infinite;
 }
 
-.reveal-word__inner {
-  display: inline-block;
-  will-change: transform;
-}
-
-html[data-motion="full"] .reveal-word__inner {
-  transform: translateY(110%);
-}
-
-/* ===== INDICADOR DE SCROLL ===== */
-/**
- * O ponto desce dentro da cápsula e reaparece no topo. Loop ambiente de
- * 2,4s — acima da faixa de micro-interação porque o gesto precisa ser
- * lido como convite, não como aviso.
- *
- * A regra de reduced-motion mais abaixo zera esta animação junto com as
- * demais.
- */
-.scroll-cue__dot {
-  animation: scroll-cue 2400ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-@keyframes scroll-cue {
-  0% {
-    transform: translate(-50%, 0);
-    opacity: 0;
-  }
-  20% {
-    opacity: 1;
-  }
-  70% {
-    opacity: 1;
-  }
+@keyframes farol-hint-pulse {
+  0%,
   100% {
-    transform: translate(-50%, 20px);
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ===== FAROL — HALO E FEIXES ACENDENDO =====
+   1200ms ease-out no clique (README, Cena 1B). Só quando a classe
+   .farol-animate-in existe: ao carregar já aceso (/origem) não anima. */
+.farol-animate-in [data-farol-on],
+.farol-animate-in [data-farol-beams] {
+  animation: farol-light-in 1200ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes farol-light-in {
+  from {
     opacity: 0;
   }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===== NEBLINA (Cena 1B — headline) =====
+   Cada palavra nasce em blur/opacidade 0 e desliza para o estado normal
+   via GSAP (ver SceneHero). O CSS só define o estado inicial: sem ele a
+   headline apareceria pronta por um quadro antes do JS assumir. Sem JS,
+   ou com movimento reduzido, a palavra nasce legível. */
+html[data-motion="full"] [data-fog-word] {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(14px);
+  letter-spacing: 0.08em;
+}
+
+/* ===== REVELAÇÃO DA MISSÃO (Cena 5) =====
+   Ligada ao scroll (scrub), não a uma entrada única — por isso o estado
+   inicial é opacidade .14, não 0: a frase inteira já está lá, apagada. */
+html[data-motion="full"] [data-mission-word] {
+  display: inline-block;
+  opacity: 0.14;
 }
 
 /* ===== MOVIMENTO REDUZIDO =====
@@ -212,4 +200,64 @@ html[data-motion="reduced"] {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ===== FUNDOS RADIAIS DAS CENAS 1 E 6 =====
+   Tamanhos diferentes no celular (artboards mobile do mockup) e no desktop. */
+.hero-glow {
+  background: radial-gradient(300px 260px at 50% 17%, rgba(200, 179, 138, 0.1), transparent 70%);
+}
+.cta-glow {
+  background: radial-gradient(320px 300px at 50% 50%, rgba(200, 179, 138, 0.07), transparent 70%);
+}
+@media (min-width: 1024px) {
+  .hero-glow {
+    background: radial-gradient(640px 420px at 50% 21%, rgba(200, 179, 138, 0.1), transparent 70%);
+  }
+  .cta-glow {
+    background: radial-gradient(720px 420px at 50% 54%, rgba(200, 179, 138, 0.07), transparent 70%);
+  }
+}
+
+/* ===== MENU MOBILE ABERTO =====
+   O farol persistente fica ACIMA do fundo do menu (README, "Nav"), e a página
+   não rola por baixo. Header.tsx escreve data-menu="open" no <html>. */
+html[data-menu="open"] [data-farol-wrapper] {
+  z-index: 45;
+}
+html[data-menu="open"] {
+  overflow: hidden;
+}
+html[data-menu="open"] [data-progress] {
+  display: none;
+}
+
+/* ===== HEADER =====
+   Fade de 600ms depois do farol acender (o componente só monta nesse
+   momento, então a entrada é sempre a primeira coisa que ele faz). */
+.animate-header-in {
+  /* 300ms de atraso: menu e indicador entram depois da headline (README, Cena 1B). */
+  animation: header-in 600ms ease-out 300ms both;
+}
+
+@keyframes header-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===== CURSOR CUSTOMIZADO =====
+   O cursor nativo só é escondido quando o halo está de fato ativo (ver
+   CursorHalo) — nunca em campos de texto, e nunca sob reduced-motion ou
+   em dispositivos sem hover, onde o componente nem monta. */
+html[data-cursor="halo"] {
+  cursor: none;
+}
+
+html[data-cursor="halo"] input,
+html[data-cursor="halo"] textarea {
+  cursor: text;
 }

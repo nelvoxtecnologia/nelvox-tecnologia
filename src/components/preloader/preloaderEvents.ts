@@ -1,13 +1,13 @@
 /* ===== SINAL DE FIM DO PRELOADER ===== */
 /**
- * O Preloader e o ScrollReveal são componentes irmãos e independentes,
- * mas o hero só deve entrar depois que o símbolo sair. Um evento no
- * window desacopla os dois sem precisar de um provider de contexto
- * envolvendo a página inteira.
+ * O Preloader e os componentes que dependem dele (Farol, ConsentBanner)
+ * são irmãos independentes, mas nada deles deve começar antes do
+ * símbolo sair. Um evento no window desacopla os dois sem precisar de
+ * um provider de contexto envolvendo a página inteira.
  *
- * O atributo data-preloader no <html> cobre a corrida: se o ScrollReveal
- * hidratar depois do preloader já ter terminado, ele lê o estado em vez
- * de esperar por um evento que nunca mais virá.
+ * O atributo data-preloader no <html> cobre a corrida: se um desses
+ * componentes hidratar depois do preloader já ter terminado, ele lê o
+ * estado em vez de esperar por um evento que nunca mais virá.
  */
 export const PRELOADER_DONE_EVENT = "nelvox:preloader-done";
 

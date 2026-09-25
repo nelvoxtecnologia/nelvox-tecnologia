@@ -1,18 +1,23 @@
+import { Preloader } from "@/components/preloader/Preloader";
+import { Farol } from "@/components/farol/Farol";
+import { CursorHalo } from "@/components/ui/CursorHalo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/sections/Hero";
-import { WhatWeDo } from "@/components/sections/WhatWeDo";
-import { Method } from "@/components/sections/Method";
-import { TypographicMoment } from "@/components/sections/TypographicMoment";
-import { CTASection } from "@/components/sections/CTASection";
-import { Preloader } from "@/components/preloader/Preloader";
-import { ScrollReveal } from "@/components/visual/ScrollReveal";
+import { SceneProgress } from "@/components/layout/SceneProgress";
+import { HomeScroll } from "@/components/visual/HomeScroll";
+import { SceneHero } from "@/components/scenes/SceneHero";
+import { SceneSea } from "@/components/scenes/SceneSea";
+import { SceneMethod } from "@/components/scenes/SceneMethod";
+import { SceneMission } from "@/components/scenes/SceneMission";
+import { SceneCta } from "@/components/scenes/SceneCta";
 
 export default function Home() {
   return (
     <>
       <Preloader />
-      <ScrollReveal />
+      <HomeScroll />
+      <CursorHalo />
+      <Farol />
 
       {/* Primeiro elemento focável da página: permite pular a navegação. */}
       <a
@@ -23,13 +28,14 @@ export default function Home() {
       </a>
 
       <Header />
+      <SceneProgress />
 
-      <main id="conteudo">
-        <Hero />
-        <WhatWeDo />
-        <Method />
-        <TypographicMoment />
-        <CTASection />
+      <main id="conteudo" className="relative z-10">
+        <SceneHero />
+        <SceneSea />
+        <SceneMethod />
+        <SceneMission />
+        <SceneCta />
       </main>
 
       <Footer />

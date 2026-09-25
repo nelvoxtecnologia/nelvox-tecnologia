@@ -38,7 +38,9 @@ export function JsonLd() {
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      /* Escapa "<" para que nenhum valor consiga fechar a tag </script>
+         (recomendação do guia json-ld do Next.js). */
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
     />
   );
 }

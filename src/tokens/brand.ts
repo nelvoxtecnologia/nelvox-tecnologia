@@ -28,6 +28,8 @@ export const GOLD = {
   400: "#C8B38A",
   500: "#B89968",
   600: "#A17F4C",
+  /** Só a lâmpada do farol e a frente da cascata do mar de pontos. */
+  bright: "#F0DFB8",
 } as const;
 
 export const PAPEL = {

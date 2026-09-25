@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { cormorant, generalSans } from "@/fonts";
 import { MotionScript } from "@/components/visual/MotionScript";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { Tracking } from "@/components/consent/Tracking";
+import { ConsentBanner } from "@/components/consent/ConsentBanner";
+import { ConsentPreferences } from "@/components/consent/ConsentPreferences";
 import { META, SITE_URL } from "@/content/site";
 import "./globals.css";
 
@@ -11,6 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: META.title,
   description: META.description,
+  keywords: META.keywords,
   applicationName: META.siteName,
   alternates: { canonical: "/" },
   openGraph: {
@@ -51,7 +55,12 @@ export default function RootLayout({
           exemplo), e o React acusa isso como divergência de hidratação.
           Não há nada a corrigir no código — o aviso é sobre o ambiente
           de quem visita, então é suprimido aqui. */}
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        {children}
+        <ConsentBanner />
+        <ConsentPreferences />
+        <Tracking />
+      </body>
     </html>
   );
 }
