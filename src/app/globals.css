@@ -261,3 +261,11 @@ html[data-cursor="halo"] input,
 html[data-cursor="halo"] textarea {
   cursor: text;
 }
+
+/* <dialog> aberto com showModal() (preferências de cookies) renderiza na
+   "top layer" do navegador, acima do halo (fixed, z-[60]): o halo continua
+   ativo mas pintado por baixo do diálogo, então nada aparecia por cima
+   dele. Restaura o cursor nativo dentro do diálogo aberto. */
+html[data-cursor="halo"] dialog[open] {
+  cursor: auto;
+}
