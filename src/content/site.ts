@@ -29,12 +29,10 @@ export const STATE = "BA";
 
 /* ===== DADOS DO CONTROLADOR (LGPD) =====
    Razão social e CNPJ confirmados (MEI). O endereço é residencial e por isso
-   NÃO é publicado: a política mostra só a cidade. Ainda a confirmar (aparecem
-   com destaque tracejado e o build avisa): nome do encarregado (DPO) e o prazo
-   de guarda das conversas ([12 meses]) — ver PRIVACY abaixo. */
+   NÃO é publicado: a política mostra só a cidade. */
 export const LEGAL_NAME = "66.105.997 DOUGLAS BARBOSA ALVES";
 export const LEGAL_CNPJ = "66.105.997/0001-52";
-export const DPO_NAME = "[Nome do encarregado]";
+export const DPO_NAME = "Douglas Barbosa Alves";
 /** Contato para pedidos da LGPD (seção 13 da política). */
 export const PRIVACY_EMAIL = EMAIL;
 
@@ -386,7 +384,7 @@ export const PRIVACY = {
 
   retencao: {
     rows: [
-      { term: "Conversas sem contrato", text: "Até [12 meses] após o último contato." },
+      { term: "Conversas sem contrato", text: "Até 12 meses após o último contato." },
       {
         term: "Clientes",
         text: "Durante o contrato e pelo prazo exigido pela legislação fiscal (5 anos).",
@@ -431,8 +429,18 @@ export const PRIVACY = {
   },
 };
 
-/** True enquanto restar algum [dado] a confirmar na política — usado para o aviso de build. */
-export const PRIVACY_HAS_PLACEHOLDER = JSON.stringify(PRIVACY).includes("[");
+/**
+ * True enquanto restar algum [dado] a confirmar na política — usado para o aviso de build.
+ * Verifica apenas o conteúdo textual (não a sintaxe de array/objeto), senão qualquer
+ * lista dentro de PRIVACY (ex.: linhas de tabela) faria isso disparar sempre.
+ */
+function hasBracketPlaceholder(value: unknown): boolean {
+  if (typeof value === "string") return /\[[^[\]]*\]/.test(value);
+  if (Array.isArray(value)) return value.some(hasBracketPlaceholder);
+  if (value && typeof value === "object") return Object.values(value).some(hasBracketPlaceholder);
+  return false;
+}
+export const PRIVACY_HAS_PLACEHOLDER = hasBracketPlaceholder(PRIVACY);
 
 /* ===== METADADOS ===== */
 export const META = {

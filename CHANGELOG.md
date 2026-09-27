@@ -16,3 +16,12 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   `localStorage`; CSP e demais cabeçalhos de segurança (`next.config.ts`).
   **Responsável**: Claude Code. **Impacto LGPD**: sim — impede que valor malformado vire
   script e limita de onde o site pode carregar/enviar dados (ver `docs/SEGURANCA.md`).
+
+## 2026-09-27
+- **Alteração**: preenchidos os dois últimos dados pendentes da política de privacidade —
+  nome do encarregado (DPO) e prazo de guarda de conversas sem contrato (12 meses, sem
+  colchetes). Corrigido também o aviso de build (`PRIVACY_HAS_PLACEHOLDER`), que usava
+  `JSON.stringify(...).includes("[")` e por isso disparava sempre (todo array do objeto
+  gera "[" no JSON, mesmo sem placeholder real); agora verifica só o texto de cada campo.
+  **Responsável**: Claude Code (dados confirmados pelo Douglas). **Impacto LGPD**: sim —
+  identifica o encarregado e define o prazo de retenção exigidos pela política.
