@@ -25,3 +25,10 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   gera "[" no JSON, mesmo sem placeholder real); agora verifica só o texto de cada campo.
   **Responsável**: Claude Code (dados confirmados pelo Douglas). **Impacto LGPD**: sim —
   identifica o encarregado e define o prazo de retenção exigidos pela política.
+- **Alteração**: revogar só a categoria Marketing (ou só Análise) no diálogo de preferências
+  agora limpa os cookies daquela categoria de imediato (`_fbp`/`_fbc` ou `_ga`/`_gid`/`_gat`);
+  antes, `clearTrackingCookies()` só rodava quando as duas categorias estavam negadas ao mesmo
+  tempo, deixando cookies de uma categoria já revogada no navegador enquanto a outra
+  permanecesse aceita. Achado em auditoria de segurança de código.
+  **Responsável**: Claude Code. **Impacto LGPD**: sim — reforça a Regra 6 (revogar precisa
+  zerar de fato o rastreamento daquela categoria, não só sinalizar ao SDK).

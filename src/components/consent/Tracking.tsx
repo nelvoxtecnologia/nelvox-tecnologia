@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { CONSENT_CHANGED_EVENT, type ConsentState, clearTrackingCookies, readConsent } from "@/lib/consent";
+import {
+  ANALYTICS_COOKIE_PREFIXES,
+  CONSENT_CHANGED_EVENT,
+  MARKETING_COOKIE_PREFIXES,
+  type ConsentState,
+  clearTrackingCookies,
+  readConsent,
+} from "@/lib/consent";
 
 declare global {
   interface Window {
@@ -64,9 +71,10 @@ export function Tracking() {
       if (!detail.marketing && typeof window.fbq === "function") {
         window.fbq("consent", "revoke");
       }
-      if (!detail.analytics && !detail.marketing) {
-        clearTrackingCookies();
-      }
+      /* Cada categoria limpa só os próprios cookies, para revogar uma não apagar
+         cookies de uma categoria ainda consentida. */
+      if (!detail.analytics) clearTrackingCookies(ANALYTICS_COOKIE_PREFIXES);
+      if (!detail.marketing) clearTrackingCookies(MARKETING_COOKIE_PREFIXES);
     };
     window.addEventListener(CONSENT_CHANGED_EVENT, onChange);
     return () => window.removeEventListener(CONSENT_CHANGED_EVENT, onChange);

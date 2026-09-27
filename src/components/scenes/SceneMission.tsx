@@ -11,7 +11,7 @@ import { SCENES } from "@/content/site";
  */
 export function SceneMission() {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const textRef = useRef<HTMLHeadingElement>(null);
   /* As palavras não mudam depois do primeiro render — buscá-las de novo
      a cada quadro seria refazer o mesmo `querySelectorAll` 60x por
      segundo para nada. */
@@ -78,12 +78,12 @@ export function SceneMission() {
       >
         <div className="mx-auto flex w-full max-w-container flex-col gap-6 pl-6 pr-[28px] lg:px-20">
           <p className="eyebrow">{SCENES.missao.eyebrow}</p>
-          <p
+          <h2
             ref={textRef}
             className="max-w-4xl font-display text-mission-mobile font-light text-papel-300 lg:text-mission"
           >
             <RichText text={SCENES.missao.text} reveal="mission" />
-          </p>
+          </h2>
         </div>
       </section>
     </div>

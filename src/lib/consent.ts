@@ -73,16 +73,24 @@ export function openConsentPreferences() {
   window.dispatchEvent(new CustomEvent(OPEN_CONSENT_PREFERENCES_EVENT));
 }
 
-/** Remove os cookies de terceiro do domínio ao revogar o consentimento. */
-export function clearTrackingCookies() {
-  const names = ["_ga", "_gid", "_gat", "_fbp", "_fbc"];
+/** Prefixos de cookie por categoria — usados para revogar cada categoria de forma independente. */
+export const ANALYTICS_COOKIE_PREFIXES = ["_ga", "_gid", "_gat"];
+export const MARKETING_COOKIE_PREFIXES = ["_fbp", "_fbc"];
+
+/**
+ * Remove do domínio os cookies cujo nome bate com um dos prefixos passados.
+ * Chamada por categoria (Análise ou Marketing) para que revogar uma não apague
+ * cookies da outra categoria ainda consentida (Regra 6: revogar precisa zerar
+ * de fato o rastreamento daquela categoria).
+ */
+export function clearTrackingCookies(prefixes: string[]) {
   const isPrefixed = (cookieName: string, prefix: string) =>
     cookieName === prefix || cookieName.startsWith(`${prefix}_`);
 
   document.cookie.split(";").forEach((entry) => {
     const name = entry.split("=")[0]?.trim();
     if (!name) return;
-    if (names.some((prefix) => isPrefixed(name, prefix))) {
+    if (prefixes.some((prefix) => isPrefixed(name, prefix))) {
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
     }
   });
