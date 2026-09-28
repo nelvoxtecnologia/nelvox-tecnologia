@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { readConsent, saveConsent, openConsentPreferences } from "@/lib/consent";
 import { FAROL_LIT_EVENT, isFarolLit } from "@/lib/farolEvents";
 import { PRELOADER_DONE_EVENT } from "@/components/preloader/preloaderEvents";
+import { FOOTER_LINKS } from "@/content/site";
 
 const SHOW_DELAY_MS = 1200;
 
@@ -118,7 +119,7 @@ export function ConsentBanner() {
         </button>
         <span className="text-papel-700">·</span>
         <a
-          href="/privacidade"
+          href={FOOTER_LINKS.privacidade.href}
           data-hot
           className="text-papel-500 transition-colors duration-ui ease-brand-in-out hover:text-papel-300"
         >

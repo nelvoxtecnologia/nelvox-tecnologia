@@ -7,7 +7,7 @@ import { openConsentPreferences } from "@/lib/consent";
 
 /**
  * Rodapé completo do site — usado no fim da home (depois da Cena 6),
- * em /origem e em /privacidade. Duas colunas que quebram para
+ * em /quem-somos e em /politica-de-privacidade. Duas colunas que quebram para
  * empilhado no mobile: marca+slogan de um lado, links institucionais
  * do outro.
  *

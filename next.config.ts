@@ -61,6 +61,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // Rotas renomeadas (28/09/2026): preserva links já compartilhados/indexados.
+  async redirects() {
+    return [
+      { source: "/origem", destination: "/quem-somos", permanent: true },
+      { source: "/privacidade", destination: "/politica-de-privacidade", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

@@ -9,6 +9,8 @@ import { trackLead } from "@/lib/track";
 type MagneticButtonProps = {
   children: React.ReactNode;
   className?: string;
+  /** Mensagem diferente por contexto (ex.: "Contratar Plano" em /planos). Padrão: contactHref(). */
+  href?: string;
 };
 
 /**
@@ -18,7 +20,7 @@ type MagneticButtonProps = {
  * `(hover: none)` e com reduced motion — nesses casos o botão continua
  * clicável, só sem o efeito.
  */
-export function MagneticButton({ children, className = "" }: MagneticButtonProps) {
+export function MagneticButton({ children, className = "", href }: MagneticButtonProps) {
   const areaRef = useRef<HTMLAnchorElement>(null);
   const labelRef = useRef<HTMLSpanElement>(null);
 
@@ -78,7 +80,7 @@ export function MagneticButton({ children, className = "" }: MagneticButtonProps
   return (
     <a
       ref={areaRef}
-      href={contactHref()}
+      href={href ?? contactHref()}
       target="_blank"
       rel="noopener noreferrer"
       onClick={trackLead}

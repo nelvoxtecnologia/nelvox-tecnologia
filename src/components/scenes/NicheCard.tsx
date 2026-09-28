@@ -9,6 +9,7 @@ type Dot = readonly [string, number, "bright" | "gold" | "off"];
 type NicheCardProps = {
   card: NicheCardData;
   delayMs: number;
+  onOpen: () => void;
 };
 
 /** Aparência dos pontos-alvo. Desktop: 5px com brilho; celular: 4px, sem brilho (mockup). */
@@ -54,9 +55,14 @@ function Dots({ dots, mobile, visible }: { dots: readonly Dot[]; mobile: boolean
  *
  * Espaçamentos em px arbitrários de propósito: a escala de spacing do
  * tailwind.config.ts é fechada (4, 8, 16, 24…) e não tem 11px, 28px etc.
+ *
+ * O card é um <button> (não <div>): clicar abre o diálogo com o
+ * detalhamento da solução (ver MethodCards.tsx) — pedido de usuário
+ * (28/09/2026), que muda a especificação original do handoff
+ * ("sem clicável, sem CTA nos cards").
  */
-export function NicheCard({ card, delayMs }: NicheCardProps) {
-  const rootRef = useRef<HTMLDivElement>(null);
+export function NicheCard({ card, delayMs, onOpen }: NicheCardProps) {
+  const rootRef = useRef<HTMLButtonElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -90,10 +96,13 @@ export function NicheCard({ card, delayMs }: NicheCardProps) {
   };
 
   return (
-    <div
+    <button
       ref={rootRef}
+      type="button"
+      onClick={onOpen}
+      aria-haspopup="dialog"
       data-hot
-      className="group flex flex-col gap-[14px] overflow-hidden rounded-md border border-navy-700 bg-navy-800/90 px-6 pb-[20px] pt-[28px] transition-[opacity,transform,border-color] duration-500 ease-brand-out hover:-translate-y-1 hover:border-gold-600 lg:gap-4 lg:bg-navy-800 lg:px-[40px] lg:pb-[28px] lg:pt-[36px]"
+      className="group flex flex-col gap-[14px] overflow-hidden rounded-md border border-navy-700 bg-navy-800/90 px-6 pb-[20px] pt-[28px] text-left transition-[opacity,transform,border-color] duration-500 ease-brand-out hover:-translate-y-1 hover:border-gold-600 lg:gap-4 lg:bg-navy-800 lg:px-[40px] lg:pb-[28px] lg:pt-[36px]"
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(24px)",
@@ -132,6 +141,6 @@ export function NicheCard({ card, delayMs }: NicheCardProps) {
           </div>
         ))}
       </div>
-    </div>
+    </button>
   );
 }

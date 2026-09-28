@@ -18,7 +18,7 @@ import { readFarolStatusScript } from "@/lib/farolEvents";
  *
  * Também escreve data-farol="on" quando a home é revisitada depois de
  * já ter acendido o farol (ver farolEvents.ts) — sem isso o scroll
- * travaria de novo a cada retorno de /origem.
+ * travaria de novo a cada retorno de /quem-somos.
  */
 const SCRIPT = `(function(){try{var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches;document.documentElement.setAttribute("data-motion",r?"reduced":"full")}catch(e){document.documentElement.setAttribute("data-motion","reduced")}${readFarolStatusScript()}})();`;
 

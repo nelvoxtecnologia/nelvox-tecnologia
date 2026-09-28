@@ -17,7 +17,7 @@ e o que foi feito. Hospedagem prevista: **Hostinger, plano Node.js Web App**
 | 07 | SSRF | N/A | O servidor não faz requisições (sem `fetch`, route handlers ou server actions). |
 | 08 | Senhas | N/A | Sem autenticação. |
 | 09 | DoS / DDoS | Fora do app | Nada no app para limitar (só páginas estáticas). Proteção volumétrica e limites ficam na Hostinger/CDN. |
-| 10 | Rotas administrativas | N/A | Não existem (`src/app` só tem `/`, `/origem`, `/privacidade`, `robots`, `sitemap`). |
+| 10 | Rotas administrativas | N/A | Não existem (`src/app` só tem `/`, `/quem-somos`, `/politica-de-privacidade`, `/planos`, `robots`, `sitemap`). |
 | 11 | Bots em login/cadastro | N/A | Sem login nem cadastro. |
 | 12 | Erros que vazam dados | OK | Sem tratamento de erro customizado; em produção o Next mostra páginas genéricas (sem stack). `X-Powered-By` removido. |
 

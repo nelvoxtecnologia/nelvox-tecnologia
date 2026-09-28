@@ -7,10 +7,19 @@ import { SCENES } from "@/content/site";
 
 const TRIGGER_PROGRESS = 0.12;
 /* Onde o texto troca de "Problema" para "Solução" e volta, em fração do
-   scroll dentro do "pin" — com uma folga (histerese) entre ida e volta
-   para o texto não "tremer" quando o scroll para bem no meio. */
+   scroll dentro do "pin". O blend entre as duas camadas é CONTÍNUO (scrub),
+   não um estado binário com transição de tempo fixo — assim ele sempre
+   acompanha a posição exata do scroll, em qualquer velocidade e direção,
+   em vez de "correr atrás" quando o usuário rola rápido. TEXT_BACKWARD_AT/
+   TEXT_FORWARD_AT continuam existindo como a FAIXA em que o blend ocorre
+   (histerese: ida e volta cruzam a faixa em sentidos opostos, então o
+   texto não "treme" se o scroll parar bem no meio). */
 const TEXT_FORWARD_AT = 0.38;
 const TEXT_BACKWARD_AT = 0.3;
+
+function clamp01(value: number) {
+  return Math.min(1, Math.max(0, value));
+}
 
 /**
  * Cenas 2 (Problema) + 3 (Solução): mesma composição e os mesmos
@@ -31,6 +40,16 @@ export function SceneSea() {
   const cascadeTriggeredRef = useRef(false);
   const [phase, setPhase] = useState<"problema" | "solucao">("problema");
 
+  /* As 4 camadas de texto (título+corpo de Problema e de Solução) recebem a
+     opacity do blend DIRETO por ref a cada frame — não via state/classe
+     Tailwind — para o crossfade sempre corresponder exatamente à posição do
+     scroll, em qualquer velocidade, sem depender de uma transição CSS de
+     tempo fixo "correndo atrás" do usuário. */
+  const problemaHeadingRef = useRef<HTMLDivElement>(null);
+  const solucaoHeadingRef = useRef<HTMLDivElement>(null);
+  const problemaBodyRef = useRef<HTMLParagraphElement>(null);
+  const solucaoBodyRef = useRef<HTMLParagraphElement>(null);
+
   const onScroll = useCallback(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
@@ -41,10 +60,19 @@ export function SceneSea() {
 
     const progress = Math.min(1, Math.max(0, -rect.top / scrollable));
 
-    /* Troca de texto: bidirecional, com histerese. A forma funcional do
-       setState (em vez de ler `phase` de uma ref) evita re-render
-       quando o valor não muda — importante porque este callback roda a
-       cada quadro (ver o loop de rAF abaixo). */
+    /* Blend contínuo (0 = só Problema, 1 = só Solução) — função monotônica
+       de `progress`, sem estado, sem flicker possível: ao contrário de um
+       toggle binário, não há "borda" para tremer perto de. */
+    const blend = clamp01((progress - TEXT_BACKWARD_AT) / (TEXT_FORWARD_AT - TEXT_BACKWARD_AT));
+    if (problemaHeadingRef.current) problemaHeadingRef.current.style.opacity = String(1 - blend);
+    if (solucaoHeadingRef.current) solucaoHeadingRef.current.style.opacity = String(blend);
+    if (problemaBodyRef.current) problemaBodyRef.current.style.opacity = String(1 - blend);
+    if (solucaoBodyRef.current) solucaoBodyRef.current.style.opacity = String(blend);
+
+    /* `phase` só decide aria-hidden/pointer-events (acessibilidade e
+       clique) — não a opacidade visual. Mantém a histerese: ida e volta
+       cruzam a faixa em pontos diferentes, então não troca de leitor de
+       tela nem de alvo de clique repetidamente com o scroll parado no meio. */
     setPhase((current) => {
       if (current === "problema" && progress >= TEXT_FORWARD_AT) return "solucao";
       if (current === "solucao" && progress <= TEXT_BACKWARD_AT) return "problema";
@@ -106,15 +134,16 @@ export function SceneSea() {
 
   /* Cada "camada" de texto (Problema/Solução) ocupa a MESMA célula do grid
      ([grid-area:1/1]), então a caixa tem a altura da maior e o texto que
-     entra não empurra o layout. A que não está ativa fica invisível e fora
-     do alcance de leitores de tela. */
-  const layer = (active: boolean) =>
-    `[grid-area:1/1] transition-opacity duration-500 ${active ? "opacity-100" : "pointer-events-none opacity-0"}`;
+     entra não empurra o layout. A opacity vem do blend por ref (onScroll);
+     aqui só controla o que recebe clique/leitor de tela. */
+  const layer = (active: boolean) => `[grid-area:1/1] ${active ? "" : "pointer-events-none"}`;
 
   return (
-    /* 160vh (não 220vh): dá espaço para a cascata e a troca de texto sem
-       deixar o scroll "pesado" — ver DECISOES.md. */
-    <div ref={wrapperRef} className="relative h-[160vh]">
+    /* 130vh (não 160vh): a cascata e a troca de texto terminam bem antes do
+       fim do "pin" — o trecho de scroll depois disso não produzia nenhuma
+       mudança visual e era lido como "travou" (feedback de usuário,
+       28/09/2026). Ver DECISOES.md. */
+    <div ref={wrapperRef} className="relative h-[130vh]">
       <div id="cena-2" data-scene="2" className="sticky top-0 h-screen overflow-hidden">
         {/* Horizonte (mobile 520/844, desktop 500/900) e névoa centrada nele */}
         <div
@@ -136,13 +165,23 @@ export function SceneSea() {
             Desktop: título à esquerda e apoio à direita, centralizados na altura. */}
         <div className="relative z-10 mx-auto grid h-full w-full max-w-container content-start gap-[20px] pl-6 pr-[28px] pt-[116px] lg:grid-cols-12 lg:content-center lg:items-center lg:gap-6 lg:px-20 lg:pt-0">
           <div className="grid lg:col-span-7">
-            <div className={`${layer(phase === "problema")} flex flex-col gap-[20px]`} aria-hidden={phase !== "problema"}>
+            <div
+              ref={problemaHeadingRef}
+              className={`${layer(phase === "problema")} flex flex-col gap-[20px]`}
+              style={{ opacity: 1 }}
+              aria-hidden={phase !== "problema"}
+            >
               <p className="eyebrow">{SCENES.problema.eyebrow}</p>
               <h2 className="font-display text-display-l-mobile font-light text-papel-300 lg:max-w-xl lg:text-display-l">
                 <RichText text={SCENES.problema.headline} breaks="desktop" />
               </h2>
             </div>
-            <div className={`${layer(phase === "solucao")} flex flex-col gap-[20px]`} aria-hidden={phase !== "solucao"}>
+            <div
+              ref={solucaoHeadingRef}
+              className={`${layer(phase === "solucao")} flex flex-col gap-[20px]`}
+              style={{ opacity: 0 }}
+              aria-hidden={phase !== "solucao"}
+            >
               <p className="eyebrow">{SCENES.solucao.eyebrow}</p>
               <h2 className="font-display text-display-l-mobile font-light text-papel-300 lg:max-w-xl lg:text-display-l">
                 <RichText text={SCENES.solucao.headline} breaks="desktop" />
@@ -151,10 +190,20 @@ export function SceneSea() {
           </div>
 
           <div className="grid lg:col-span-5">
-            <p className={`${layer(phase === "problema")} font-body text-body text-papel-500 lg:max-w-[340px]`} aria-hidden={phase !== "problema"}>
+            <p
+              ref={problemaBodyRef}
+              className={`${layer(phase === "problema")} font-body text-body text-papel-500 lg:max-w-[340px]`}
+              style={{ opacity: 1 }}
+              aria-hidden={phase !== "problema"}
+            >
               {SCENES.problema.body}
             </p>
-            <p className={`${layer(phase === "solucao")} font-body text-body text-papel-500 lg:max-w-[340px]`} aria-hidden={phase !== "solucao"}>
+            <p
+              ref={solucaoBodyRef}
+              className={`${layer(phase === "solucao")} font-body text-body text-papel-500 lg:max-w-[340px]`}
+              style={{ opacity: 0 }}
+              aria-hidden={phase !== "solucao"}
+            >
               {SCENES.solucao.body}
             </p>
           </div>

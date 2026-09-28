@@ -5,7 +5,8 @@ import { CursorHalo } from "@/components/ui/CursorHalo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PrivacyContent } from "@/components/privacy/PrivacyContent";
-import { PRIVACY, PRIVACY_HAS_PLACEHOLDER, META, SITE_URL } from "@/content/site";
+import { BackLink } from "@/components/ui/BackLink";
+import { PRIVACY, PRIVACY_HAS_PLACEHOLDER, META, SITE_URL, NAV_PRIVACIDADE_HREF } from "@/content/site";
 
 if (PRIVACY_HAS_PLACEHOLDER) {
   console.warn(
@@ -17,12 +18,12 @@ if (PRIVACY_HAS_PLACEHOLDER) {
 export const metadata: Metadata = {
   title: `${PRIVACY.metaTitle} — ${META.siteName}`,
   description: PRIVACY.metaDescription,
-  alternates: { canonical: "/privacidade" },
+  alternates: { canonical: NAV_PRIVACIDADE_HREF },
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: `${SITE_URL}/privacidade`,
+    url: `${SITE_URL}${NAV_PRIVACIDADE_HREF}`,
     title: `${PRIVACY.metaTitle} — ${META.siteName}`,
     description: PRIVACY.metaDescription,
   },
@@ -37,6 +38,9 @@ export default function PrivacidadePage() {
       <Header />
 
       <main id="conteudo" className="relative z-10 pb-[128px] pt-[160px] lg:pt-48">
+        <div className="brand-container pb-8 lg:pb-12">
+          <BackLink />
+        </div>
         <div className="brand-container">
           <PrivacyContent />
         </div>

@@ -5,7 +5,7 @@ import { ManageCookiesButton } from "./ManageCookiesButton";
 import { PRIVACY } from "@/content/site";
 
 /**
- * Corpo da página /privacidade — layout do Claude Design. Todo o texto vem
+ * Corpo da página /politica-de-privacidade — layout do Claude Design. Todo o texto vem
  * de `PRIVACY` (src/content/site.ts); aqui só existe estrutura visual.
  *
  * Espaçamentos em px arbitrários de propósito: a escala do

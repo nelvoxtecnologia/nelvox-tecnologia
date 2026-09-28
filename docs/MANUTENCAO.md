@@ -13,8 +13,8 @@ dos componentes. Para mudar uma frase, é ali que se edita:
 | O quê | Onde em `site.ts` |
 |---|---|
 | Cenas da Home (eyebrow, headlines, cards do Método, CTA) | `SCENES` |
-| Textos de `/origem` ("Quem somos") | `ORIGEM` |
-| Textos de `/privacidade` | `PRIVACY` |
+| Textos de `/quem-somos` ("Quem somos") | `ORIGEM` |
+| Textos de `/politica-de-privacidade` | `PRIVACY` |
 | Rodapé (tagline, copyright) | `FOOTER` |
 | Links do menu e do rodapé | `NAV_ITEMS`, `FOOTER_LINKS` |
 | Número de WhatsApp, e-mail, cidade | `WHATSAPP_NUMBER`, `EMAIL`, `CITY`, `STATE` |
@@ -61,8 +61,8 @@ feixe), `eyebrow`, `title`, `audience` e `lines`. O grid em
   `DOCK_OFFSET`, `DOCK_OPACITY`).
 
 O farol é renderizado uma vez por página (`src/app/page.tsx`,
-`src/app/origem/page.tsx`, `src/app/privacidade/page.tsx`). Em
-`/origem` e `/privacidade` ele nasce já aceso e atracado
+`src/appquem-somos/page.tsx`, `src/apppolitica-de-privacidade/page.tsx`). Em
+`/quem-somos` e `/politica-de-privacidade` ele nasce já aceso e atracado
 (`<Farol initialDocked />`) — não repete a sequência de acender.
 
 ## Cabeçalho, rodapé e indicador de progresso
@@ -70,7 +70,7 @@ O farol é renderizado uma vez por página (`src/app/page.tsx`,
 - **`src/components/layout/Header.tsx`** — menu do topo. Só aparece
   depois que o farol acende (`useFarolLit()`).
 - **`src/components/layout/Footer.tsx`** — rodapé completo (marca +
-  slogan + links). Usado no fim da Home e em `/origem`/`/privacidade`.
+  slogan + links). Usado no fim da Home e em `/quem-somos`/`/politica-de-privacidade`.
 - **`src/components/layout/SceneProgress.tsx`** — os pontinhos de
   navegação entre cenas, à direita. Só existe em páginas que têm
   cenas (a Home).
@@ -119,17 +119,29 @@ valor arbitrário: `px-[36px]`, `gap-[12px]`, `h-[40px]`. Foi assim que
 o botão do CTA ficou sem padding e o indicador de progresso grudou na
 esquerda. Depois de mexer em espaçamento, sempre conferir no navegador.
 
+### Armadilha: `getComputedStyle(el).transform` não mostra translate/scale/rotate
+
+No Tailwind v4, `translate-*`, `scale-*` e `rotate-*` (classe, não
+`style={{transform: ...}}` via JS) compilam para as propriedades CSS
+nativas `translate`/`scale`/`rotate` — não para o `transform` legado. Ao
+depurar no DevTools ou em um script, `getComputedStyle(el).transform`
+sempre volta `"none"` para essas classes; o valor real está em
+`getComputedStyle(el).translate` (e `.scale`/`.rotate`). Perdi um tempo
+achando que `-translate-y-full` não compilava por causa da escala de
+spacing fechada (armadilha acima) — não tinha nada a ver, a classe
+sempre funcionou.
+
 ## Antes de qualquer alteração
 
 1. `npm run lint` e `npm run build` sem erros.
 2. `npm run dev` e revisar visualmente: farol apagado → aceso →
-   scroll pelas 6 cenas → `/origem` → `/privacidade`.
+   scroll pelas 6 cenas → `/quem-somos` → `/politica-de-privacidade`.
 3. Se a mudança tocar textos com `*ênfase*` ou revelação por palavra,
    prestar atenção especial ao espaçamento entre palavras — é a parte
    mais frágil do sistema (ver o comentário em
    `src/components/ui/RichText.tsx`).
 
-## Política de privacidade (`/privacidade`)
+## Política de privacidade (`/politica-de-privacidade`)
 
 Veio do Claude Design (`docs/design-handoff/Politica de Privacidade.dc.html`).
 - **Texto**: `PRIVACY` em `src/content/site.ts` (13 seções, na ordem do índice).
@@ -147,13 +159,16 @@ Veio do Claude Design (`docs/design-handoff/Politica de Privacidade.dc.html`).
 - **Corte mobile/desktop = 1024px (`lg`)** em todo o site (inclui o farol e o `DotField`).
   As medidas do celular vêm das artboards 390 do `Home Mockup.dc.html`; cada
   componente traz as duas versões (`classe` mobile + `lg:classe` desktop).
-- **Camadas (z)**: farol persistente `z-5` (atrás) · `<main>` e rodapé `z-10` · nav e
-  indicador `z-40` · banner de cookies `z-50` · cursor `z-60`. Farol apagado (antes do
-  clique) sobe para `z-20` para ser clicável; com o menu mobile aberto ele vai a `z-45`.
-  Por isso as cenas **não têm fundo opaco** — o farol aparece por trás.
+- **Camadas (z)**: farol persistente `z-5` (atrás) · `<main>` e rodapé `z-10` · botão
+  flutuante de WhatsApp (mobile) `z-30` · nav e indicador `z-40` · banner de cookies
+  `z-50` · cursor `z-60`. Farol apagado (antes do clique) sobe para `z-20` para ser
+  clicável; com o menu mobile aberto ele vai a `z-45`. Por isso as cenas **não têm
+  fundo opaco** — o farol aparece por trás.
 - **Cena 4** (`SCENES.metodo.cards`): cada card tem `clipPath`/`dots` (desktop) e
   `clipPathMobile`/`dotsMobile` (celular: pontos de 4px, sem brilho). Ordem do mockup:
-  Saúde, Turismo, Negócios Locais.
+  Saúde, Turismo, Negócios Locais. Clicar num card abre o detalhamento (`detail`,
+  diálogo em `MethodCards.tsx`) — mudança de comportamento pedida em 28/09/2026 (o
+  handoff original especificava "não clicável").
 - **Quebras de linha**: em `site.ts`, `\n` vira quebra; `<RichText breaks="desktop">` só quebra
   no desktop (Cenas 2–4) e `breaks="mobile"` só no celular (Cena 6).
 - **Menu mobile**: `Header.tsx` (foco preso, Esc fecha, farol vai ao canto via `html[data-menu]`).

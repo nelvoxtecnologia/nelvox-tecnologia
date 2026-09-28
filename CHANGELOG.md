@@ -32,3 +32,16 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   permanecesse aceita. Achado em auditoria de segurança de código.
   **Responsável**: Claude Code. **Impacto LGPD**: sim — reforça a Regra 6 (revogar precisa
   zerar de fato o rastreamento daquela categoria, não só sinalizar ao SDK).
+
+## 2026-09-28
+- **Alteração**: `/origem` e `/privacidade` renomeadas para `/quem-somos` e
+  `/politica-de-privacidade` (com redirect 301 das URLs antigas). O link da política no
+  banner de cookies (`ConsentBanner.tsx`) deixou de ser hardcoded e passou a usar a
+  constante `FOOTER_LINKS.privacidade.href`, para não desalinhar se a rota mudar de novo.
+  `Tracking.tsx` só teve um comentário atualizado (rota antiga citada em texto), sem
+  mudança de comportamento. `layout.tsx` passou a montar também o novo
+  `WhatsappFloatingButton` (botão de WhatsApp flutuante, mobile) — mesmo padrão de
+  `contactHref()`/`trackLead()` já usado nos outros CTAs, sem novo destino de dado.
+  **Responsável**: Claude Code. **Impacto LGPD**: nenhum — é reorganização de rota e
+  navegação; nenhum dado novo é coletado e o consentimento continua controlando os
+  mesmos dois scripts (GA4/Meta) do jeito que já estava.

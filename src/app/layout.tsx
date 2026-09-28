@@ -5,6 +5,7 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Tracking } from "@/components/consent/Tracking";
 import { ConsentBanner } from "@/components/consent/ConsentBanner";
 import { ConsentPreferences } from "@/components/consent/ConsentPreferences";
+import { WhatsappFloatingButton } from "@/components/ui/WhatsappFloatingButton";
 import { META, SITE_URL } from "@/content/site";
 import "./globals.css";
 
@@ -57,6 +58,7 @@ export default function RootLayout({
           de quem visita, então é suprimido aqui. */}
       <body suppressHydrationWarning>
         {children}
+        <WhatsappFloatingButton />
         <ConsentBanner />
         <ConsentPreferences />
         <Tracking />

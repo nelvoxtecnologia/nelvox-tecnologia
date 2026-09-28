@@ -51,16 +51,27 @@ export function contactHref(): string {
   return `mailto:${EMAIL}?subject=${encodeURIComponent("Contato pelo site")}`;
 }
 
+/** Mesma lógica de `contactHref()`, com a mensagem já citando o plano escolhido (/planos). */
+export function contactHrefForPlan(planName: string): string {
+  const message = `Olá! Vim pelo site e quero contratar o plano ${planName}.`;
+  if (WHATSAPP_NUMBER) {
+    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  }
+  return `mailto:${EMAIL}?subject=${encodeURIComponent(`Contratar plano ${planName}`)}`;
+}
+
 /* ===== NAVEGAÇÃO ===== */
-export const NAV_ORIGEM_HREF = "/origem";
+export const NAV_ORIGEM_HREF = "/quem-somos";
 export const NAV_ORIGEM_LABEL = "Quem somos";
+export const NAV_PRIVACIDADE_HREF = "/politica-de-privacidade";
+export const NAV_PLANOS_HREF = "/planos";
 export const NAV_CTA = "Falar com a Nelvox";
 
 export const NAV_ITEMS = [{ label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF }] as const;
 
 export const FOOTER_LINKS = {
   quemSomos: { label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF },
-  privacidade: { label: "Política de privacidade", href: "/privacidade" },
+  privacidade: { label: "Política de privacidade", href: NAV_PRIVACIDADE_HREF },
   /** `href: null` sinaliza que o link abre o diálogo de preferências, não navega. */
   preferenciasCookies: { label: "Preferências de cookies", href: null },
 } as const;
@@ -126,6 +137,20 @@ export const SCENES = {
           { label: "Google", text: "Ficha completa: horários, rota e avaliações." },
           { label: "Instagram", text: "Credibilidade antes da estética." },
         ],
+        detail: [
+          "Antes de marcar uma consulta, quem procura por saúde faz uma pesquisa " +
+            "silenciosa: olha o site, confere o Google, passa pelo Instagram. Cada " +
+            "um desses lugares precisa transmitir a mesma confiança que você já " +
+            "entrega dentro do consultório.",
+          "O site mostra especialidades, horários e o contato certo sem esconder " +
+            "nada por trás de menus confusos. O Google Meu Negócio garante que " +
+            "quem busca \"perto de mim\" encontre a ficha completa: endereço, " +
+            "rota, telefone e avaliações visíveis. O Instagram funciona como " +
+            "vitrine de credibilidade — não de estética: mostra rotina, " +
+            "estrutura, cuidado.",
+          "O resultado é um paciente que chega já decidido a marcar, porque a " +
+            "confiança começou antes da primeira mensagem.",
+        ],
       },
       {
         id: "turismo",
@@ -143,6 +168,17 @@ export const SCENES = {
           { label: "Site", text: "Mostra o lugar como ele é." },
           { label: "Google", text: "Fotos, rota e avaliações que ajudam a decidir." },
           { label: "Instagram", text: "Vitrine para quem ainda está planejando." },
+        ],
+        detail: [
+          "Quem viaja decide onde ficar e o que fazer antes de sair de casa — e " +
+            "decide pelo que encontra na tela. Um lugar sem presença clara nesse " +
+            "momento simplesmente não entra na lista de opções.",
+          "O site apresenta o lugar como ele realmente é, com as informações que " +
+            "ajudam a fechar a reserva. O Google Meu Negócio reúne fotos, " +
+            "localização e avaliações bem no momento da comparação. O Instagram " +
+            "funciona como vitrine para quem ainda está no meio do " +
+            "planejamento, sem pressa.",
+          "É a luz certa acesa antes da decisão — não depois dela.",
         ],
       },
       {
@@ -162,6 +198,18 @@ export const SCENES = {
           { label: "Site", text: "Serviços, preços e contato em um só lugar." },
           { label: "Google", text: "Aparecer em \"perto de mim\", com horário e rota." },
           { label: "Instagram", text: "Presença constante para quem é da cidade." },
+        ],
+        detail: [
+          "Comércios e serviços da cidade competem, cada vez mais, dentro de " +
+            "uma busca no celular: \"perto de mim\", com horário e rota. Quem " +
+            "não aparece ali perde o cliente para quem aparece.",
+          "O site reúne serviços, preços e contato num só lugar, sem depender " +
+            "só de indicação. O Google Meu Negócio coloca o negócio no mapa de " +
+            "quem já está por perto e pronto para decidir. O Instagram mantém " +
+            "presença constante para quem já é da cidade e passa a lembrar do " +
+            "seu negócio primeiro.",
+          "O método é o mesmo dos outros nichos, calibrado para a escala e o " +
+            "ritmo de quem atende a própria vizinhança.",
         ],
       },
     ],
@@ -247,7 +295,99 @@ export const ORIGEM = {
   ],
 };
 
-/* ===== POLÍTICA DE PRIVACIDADE (/privacidade) =====
+/* ===== PÁGINA /PLANOS =====
+   Catálogo vigente (Playbook Operacional Nelvox V5.0, Parte 4 — Contrato
+   V2.3, Anexo II). Só os 5 planos públicos; o rótulo interno "(high ticket)"
+   do Dominação Digital não aparece aqui. Qualquer alteração de preço/escopo
+   precisa vir do contrato/anexo atualizado, não só deste arquivo. */
+export const PLANS_INTRO = {
+  eyebrow: "Planos",
+  headline: "Escolha o *tamanho* da luz.",
+  intro:
+    "Cada plano calibra o que fica aceso — do site institucional até a presença " +
+    "completa em Google e Instagram. Escolha pelo que o seu negócio precisa agora; " +
+    "você pode crescer de plano quando fizer sentido.",
+};
+
+export const PLANS = [
+  {
+    id: "essencial",
+    name: "Essencial",
+    setup: "R$597",
+    monthly: "R$397/mês",
+    slaLabel: "Resposta em até 8h úteis",
+    includes: [
+      "Site institucional com até 5 seções",
+      "SSL e hospedagem inclusos",
+      "WhatsApp flutuante no site",
+      "1 atualização por mês",
+      "Verificação técnica mensal",
+    ],
+  },
+  {
+    id: "presenca-digital",
+    name: "Presença Digital",
+    setup: "R$897",
+    monthly: "R$897/mês",
+    slaLabel: "Resposta em até 6h úteis",
+    includes: [
+      "Tudo do Essencial",
+      "Mapa no Google e Google Meu Negócio completo",
+      "Post semanal no Google Meu Negócio",
+      "Resposta às avaliações em até 48h",
+      "2 atualizações por mês",
+      "Relatório mensal",
+    ],
+  },
+  {
+    id: "presenca-conteudo",
+    name: "Presença + Conteúdo",
+    setup: "R$1.297",
+    monthly: "R$1.997/mês",
+    slaLabel: "Resposta em até 6h úteis",
+    includes: [
+      "Tudo do Presença Digital",
+      "Gestão completa do Instagram (calendário editorial, 8 posts/mês, stories 3x por semana)",
+      "3 atualizações por mês",
+      "Relatório ampliado",
+    ],
+  },
+  {
+    id: "autoridade-digital",
+    name: "Autoridade Digital",
+    setup: "R$1.997",
+    monthly: "R$2.797/mês",
+    slaLabel: "Resposta em até 4h úteis",
+    includes: [
+      "Site institucional com até 7 seções",
+      "Google Meu Negócio otimizado",
+      "Resposta às avaliações em até 24h",
+      "4 atualizações por mês",
+      "12 posts por mês (com Reels) e stories em dias úteis",
+      "1 página especial por trimestre",
+      "Reunião estratégica mensal",
+    ],
+  },
+  {
+    id: "dominacao-digital",
+    name: "Dominação Digital",
+    setup: "R$2.997",
+    monthly: "R$3.997/mês",
+    slaLabel: "Resposta em até 2h úteis",
+    includes: [
+      "Site institucional com até 10 seções, incluindo blog",
+      "Hospedagem dedicada",
+      "Google Meu Negócio com otimização completa",
+      "Publicação 2x por semana e resposta às avaliações em até 12h",
+      "Atualizações ilimitadas",
+      "20 posts por mês",
+      "1 vídeo institucional e 2 páginas especiais por trimestre",
+      "Relatório executivo e reunião quinzenal",
+    ],
+  },
+] as const;
+
+/* ===== POLÍTICA DE PRIVACIDADE (/politica-de-privacidade) =====
    Texto vindo do Claude Design (docs/design-handoff — "Politica de
    Privacidade.dc.html"). Qualquer trecho entre [colchetes] é um dado ainda
    não confirmado: a página o mostra destacado (tracejado dourado) e o build

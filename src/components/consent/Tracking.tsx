@@ -80,7 +80,7 @@ export function Tracking() {
     return () => window.removeEventListener(CONSENT_CHANGED_EVENT, onChange);
   }, []);
 
-  /* Pageview a cada troca de rota (navegação client-side entre / e /origem/privacidade). */
+  /* Pageview a cada troca de rota (navegação client-side entre / e /quem-somos/politica-de-privacidade). */
   useEffect(() => {
     if (consent?.analytics && typeof window.gtag === "function") {
       window.gtag("event", "page_view", { page_path: pathname });

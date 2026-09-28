@@ -22,7 +22,7 @@ const SCENES = [
  * por cenas que ainda não existem para quem chegou) e no mobile vira
  * trilho passivo, só leitura.
  */
-/* Só existe indicador onde existem cenas — /origem e /privacidade não
+/* Só existe indicador onde existem cenas — /quem-somos e /politica-de-privacidade não
    têm `[data-scene]` e não devem mostrar um indicador vazio. */
 const hasScenes = () =>
   typeof document !== "undefined" && document.querySelectorAll("[data-scene]").length > 0;

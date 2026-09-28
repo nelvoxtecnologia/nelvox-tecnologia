@@ -9,7 +9,7 @@ import { prefersReducedMotion } from "@/lib/motion";
 import { SCENES } from "@/content/site";
 
 type FarolProps = {
-  /** /origem e /privacidade mostram o farol já aceso e atracado, sem a sequência de acender. */
+  /** /quem-somos e /politica-de-privacidade mostram o farol já aceso e atracado, sem a sequência de acender. */
   initialDocked?: boolean;
 };
 
@@ -43,6 +43,20 @@ function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
 }
 
+/**
+ * Fator de suavização exponencial normalizado por delta-time (segundos),
+ * para o farol não "teletransportar" em saltos discretos de scroll (roda do
+ * mouse, PageDown) e para o resultado não depender da taxa de quadros do
+ * dispositivo. `tau` é o tempo (s) para percorrer ~63% da distância até o
+ * alvo — quanto menor, mais rápido a docagem "cola" no scroll real.
+ */
+function smoothingFactor(dt: number, tau: number) {
+  return dt > 0 ? 1 - Math.exp(-dt / tau) : 0;
+}
+
+const DOCK_SMOOTH_TAU_S = 0.15;
+const MENU_DOCK_TAU_S = 0.2;
+
 /** ease-in-out quadrático — equivalente prático ao cubic-bezier(.4,0,.2,1) do manual. */
 function easeInOut(t: number) {
   return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -50,7 +64,7 @@ function easeInOut(t: number) {
 
 export function Farol({ initialDocked = false }: FarolProps) {
   /* `clicked`: o visitante acabou de tocar no farol. `ready`: a sequência
-     terminou (ou já estava aceso nesta sessão, ao voltar de /origem). */
+     terminou (ou já estava aceso nesta sessão, ao voltar de /quem-somos). */
   const [clicked, setClicked] = useState(false);
   const ready = useFarolLit();
   const isOn = initialDocked || clicked || ready;
@@ -58,9 +72,11 @@ export function Farol({ initialDocked = false }: FarolProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const beamsRef = useRef<SVGGElement>(null);
   const progressA = useRef(initialDocked ? 1 : 0); // 0 = centro grande, 1 = centro pequeno
-  const progressB = useRef(initialDocked ? 1 : 0); // 0 = centro pequeno, 1 = atracado
+  const progressB = useRef(initialDocked ? 1 : 0); // 0 = centro pequeno, 1 = atracado — alvo bruto do scroll
+  const progressBSmooth = useRef(initialDocked ? 1 : 0); // valor de fato desenhado (ver applyStyle)
   const rafId = useRef(0);
   const startTime = useRef(0);
+  const lastFrameTime = useRef(0);
   const reducedRef = useRef(false);
   const litRef = useRef(initialDocked);
   /* Com o menu mobile aberto o farol vai para o canto (como na artboard do
@@ -75,9 +91,13 @@ export function Farol({ initialDocked = false }: FarolProps) {
     const dock = SIZE.dock[key];
     const dockOffset = DOCK_OFFSET[key];
 
+    /* Lê o valor SUAVIZADO (progressBSmooth), não o alvo bruto do scroll
+       (progressB) — ver `tick`. Evita que o farol salte instantaneamente
+       para a posição correspondente a um scroll discreto (roda do mouse,
+       PageDown, trackpad). */
     const width =
-      progressB.current > 0
-        ? lerp(SIZE.centerSmall[key], dock.w, progressB.current)
+      progressBSmooth.current > 0
+        ? lerp(SIZE.centerSmall[key], dock.w, progressBSmooth.current)
         : lerp(SIZE.centerBig[key], SIZE.centerSmall[key], progressA.current);
     const height = width * ASPECT;
 
@@ -89,14 +109,14 @@ export function Farol({ initialDocked = false }: FarolProps) {
        (ease-out) e só depois desce (ease-in), saindo da coluna do texto da
        Cena 1 logo no começo do scroll. Junto com o farol ficar atrás do
        conteúdo (z-5 x z-10), ele nunca cobre o texto. */
-    const p = progressB.current;
+    const p = progressBSmooth.current;
     const x = lerp(centerX, dockOffset.left, 1 - (1 - p) * (1 - p));
     const y = lerp(topY, dockY, p * p);
 
     wrapper.style.width = `${width}px`;
     wrapper.style.height = `${height}px`;
     wrapper.style.transform = `translate(${x}px, ${y}px)`;
-    wrapper.style.opacity = String(lerp(1, DOCK_OPACITY[key], progressB.current));
+    wrapper.style.opacity = String(lerp(1, DOCK_OPACITY[key], p));
   }, []);
 
   const lightUp = useCallback(() => {
@@ -126,14 +146,14 @@ export function Farol({ initialDocked = false }: FarolProps) {
     requestAnimationFrame(step);
   }, []);
 
-  /* useLayoutEffect (não useEffect): em /origem e /privacidade o atributo
+  /* useLayoutEffect (não useEffect): em /quem-somos e /politica-de-privacidade o atributo
      data-farol="on" precisa existir ANTES da primeira pintura para o
      Header não "piscar" ao aparecer. */
   useLayoutEffect(() => {
     reducedRef.current = prefersReducedMotion();
 
     if (initialDocked || isFarolLit()) {
-      /* Já aceso: /origem, /privacidade, ou a volta à home na mesma sessão. */
+      /* Já aceso: /quem-somos, /politica-de-privacidade, ou a volta à home na mesma sessão. */
       litRef.current = true;
       progressA.current = 1;
       document.documentElement.dataset.farol = "on";
@@ -154,13 +174,17 @@ export function Farol({ initialDocked = false }: FarolProps) {
     function tick(now: number) {
       if (!startTime.current) startTime.current = now;
       const elapsed = (now - startTime.current) / 1000;
+      const dt = lastFrameTime.current ? (now - lastFrameTime.current) / 1000 : 0;
+      lastFrameTime.current = now;
 
       if (litRef.current) {
         /* Nas páginas internas o farol nasce atracado, independente do scroll. */
         const menuOpen = document.documentElement.dataset.menu === "open";
-        menuDock.current += ((menuOpen ? 1 : 0) - menuDock.current) * 0.15;
+        menuDock.current += ((menuOpen ? 1 : 0) - menuDock.current) * smoothingFactor(dt, MENU_DOCK_TAU_S);
         const scrolled = Math.min(1, window.scrollY / (window.innerHeight * SCRUB_VH));
         progressB.current = initialDocked ? 1 : Math.max(scrolled, menuDock.current);
+        progressBSmooth.current +=
+          (progressB.current - progressBSmooth.current) * smoothingFactor(dt, DOCK_SMOOTH_TAU_S);
 
         const beams = beamsRef.current;
         if (beams) {

@@ -30,11 +30,30 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hideCta, setHideCta] = useState(false);
+  /* Só no mobile (ver className mais abaixo): esconde a barra inteira
+     (símbolo + wordmark) ao rolar para baixo, mostra ao rolar para cima.
+     No celular a barra fixa some por trás do texto da Cena 3→4 (feedback
+     de usuário, 28/09/2026) — no desktop ela é discreta o bastante
+     (fundo com blur) para nunca precisar sumir. */
+  const [hideBar, setHideBar] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
-    const onScroll = () => setIsScrolled(window.scrollY > 24);
+    lastScrollY.current = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setIsScrolled(y > 24);
+
+      /* Ignora oscilações pequenas (bounce do iOS, tremor do trackpad) e só
+         decide a direção quando o scroll de fato avançou uns pixels. */
+      const delta = y - lastScrollY.current;
+      if (Math.abs(delta) > 4) {
+        setHideBar(delta > 0 && y > 80);
+        lastScrollY.current = y;
+      }
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -104,7 +123,9 @@ export function Header() {
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-40 animate-header-in transition-colors duration-ui ease-brand-in-out lg:border-b ${
+      className={`fixed inset-x-0 top-0 z-40 animate-header-in transition-[background-color,border-color,transform] duration-ui ease-brand-in-out lg:border-b lg:translate-y-0 ${
+        hideBar && !isMenuOpen ? "-translate-y-full" : "translate-y-0"
+      } ${
         isScrolled
           ? "lg:border-navy-700 lg:bg-navy-950/72 lg:backdrop-blur-[8px]"
           : "lg:border-transparent"
@@ -129,13 +150,16 @@ export function Header() {
           ))}
 
           {!hideCta && (
-            <Link
-              href="/#cena-6"
+            <a
+              href={contactHref()}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={trackLead}
               data-hot
               className="rounded-sm border border-gold-400 px-4 py-2 font-body text-[13px] font-semibold tracking-[0.3px] text-gold-400 transition-colors duration-ui ease-brand-in-out hover:bg-gold-400/10 hover:text-gold-bright"
             >
               {NAV_CTA}
-            </Link>
+            </a>
           )}
         </div>
 

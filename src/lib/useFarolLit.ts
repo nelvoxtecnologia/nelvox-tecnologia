@@ -15,7 +15,7 @@ import { FAROL_LIT_EVENT, isFarolLit } from "./farolEvents";
  * isso, ler `isFarolLit()` direto num `useState` ou dentro de um
  * `useEffect`/`useLayoutEffect` pode divergir do servidor (quando o
  * farol já estava aceso nesta sessão, por exemplo voltando de
- * /origem) e disparar erro de hidratação.
+ * /quem-somos) e disparar erro de hidratação.
  *
  * Fica num arquivo próprio, separado de farolEvents.ts, porque este
  * hook obriga quem o importa a ser Client Component — e

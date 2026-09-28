@@ -5,7 +5,7 @@
  * em si avisa quem já está montado.
  *
  * `nelvox:farol-status` no sessionStorage existe só para a navegação de
- * volta de /origem para a home: lá o farol já está aceso e docado, e a
+ * volta de /quem-somos para a home: lá o farol já está aceso e docado, e a
  * home não deveria travar o scroll de novo nem repetir a sequência de
  * acender.
  *

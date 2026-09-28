@@ -142,7 +142,7 @@ html[data-motion="reduced"] .preloader {
 
 /* ===== FAROL — HALO E FEIXES ACENDENDO =====
    1200ms ease-out no clique (README, Cena 1B). Só quando a classe
-   .farol-animate-in existe: ao carregar já aceso (/origem) não anima. */
+   .farol-animate-in existe: ao carregar já aceso (/quem-somos) não anima. */
 .farol-animate-in [data-farol-on],
 .farol-animate-in [data-farol-beams] {
   animation: farol-light-in 1200ms cubic-bezier(0, 0, 0.2, 1) both;
