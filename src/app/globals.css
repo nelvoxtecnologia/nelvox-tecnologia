@@ -217,6 +217,13 @@ html[data-motion="reduced"] {
   .cta-glow {
     background: radial-gradient(720px 420px at 50% 54%, rgba(200, 179, 138, 0.07), transparent 70%);
   }
+  /* Headline da Cena 1: 84px numa tela de 900px de altura, encolhendo junto
+     com o farol em telas mais baixas (ver DESKTOP_REFERENCE_HEIGHT em Farol.tsx).
+     Fora de @layer para vencer o `lg:text-display-xl`, que segue valendo para
+     entrelinha e espaçamento de letras. */
+  .hero-headline {
+    font-size: clamp(56px, calc(84px * 100vh / 900px), 84px);
+  }
 }
 
 /* ===== MENU MOBILE ABERTO =====

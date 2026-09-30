@@ -25,6 +25,12 @@ const TOP_SMALL = { desktop: 100, mobile: 84 }; // mobile: artboard 01B (top 84)
 const DOCK_OFFSET = { desktop: { left: -30, bottom: 24 }, mobile: { left: -16, bottom: 14 } };
 const DOCK_OPACITY = { desktop: 0.35, mobile: 0.3 };
 const ASPECT = 720 / 1000; // viewBox do FarolSvg
+/* As medidas desktop acima valem para uma tela de 900px de altura. Em telas
+   mais baixas (notebooks 1366×768 etc.) o farol no centro encolhe na mesma
+   proporção, senão a base sai da tela e o texto da Cena 1 cai sobre ele.
+   Mesma referência de `lg:pt-[clamp(...)]` em SceneHero.tsx. */
+const DESKTOP_REFERENCE_HEIGHT = 900;
+const DESKTOP_MIN_SCALE = 0.6;
 
 /* Mesmo corte (lg = 1024px) do resto do site: abaixo disso vale o layout mobile. */
 const MOBILE_BREAKPOINT = 1024;
@@ -90,6 +96,12 @@ export function Farol({ initialDocked = false }: FarolProps) {
     const key = window.innerWidth < MOBILE_BREAKPOINT ? "mobile" : "desktop";
     const dock = SIZE.dock[key];
     const dockOffset = DOCK_OFFSET[key];
+    const scale =
+      key === "desktop"
+        ? Math.min(1, Math.max(DESKTOP_MIN_SCALE, window.innerHeight / DESKTOP_REFERENCE_HEIGHT))
+        : 1;
+    const centerBig = SIZE.centerBig[key] * scale;
+    const centerSmall = SIZE.centerSmall[key] * scale;
 
     /* Lê o valor SUAVIZADO (progressBSmooth), não o alvo bruto do scroll
        (progressB) — ver `tick`. Evita que o farol salte instantaneamente
@@ -97,12 +109,12 @@ export function Farol({ initialDocked = false }: FarolProps) {
        PageDown, trackpad). */
     const width =
       progressBSmooth.current > 0
-        ? lerp(SIZE.centerSmall[key], dock.w, progressBSmooth.current)
-        : lerp(SIZE.centerBig[key], SIZE.centerSmall[key], progressA.current);
+        ? lerp(centerSmall, dock.w, progressBSmooth.current)
+        : lerp(centerBig, centerSmall, progressA.current);
     const height = width * ASPECT;
 
     const centerX = window.innerWidth / 2 - width / 2;
-    const topY = lerp(TOP_BIG[key], TOP_SMALL[key], progressA.current);
+    const topY = lerp(TOP_BIG[key], TOP_SMALL[key], progressA.current) * scale;
     const dockY = window.innerHeight - dockOffset.bottom - height;
 
     /* Curvas diferentes em x e y: o farol desliza para a ESQUERDA primeiro

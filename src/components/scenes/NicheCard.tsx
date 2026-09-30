@@ -134,7 +134,7 @@ export function NicheCard({ card, delayMs, onOpen }: NicheCardProps) {
         {card.lines.map((line) => (
           <div
             key={line.label}
-            className="grid grid-cols-[84px_1fr] gap-[12px] border-t border-navy-700 py-[10px] lg:grid-cols-[96px_1fr] lg:gap-4 lg:py-[11px]"
+            className="grid grid-cols-[84px_1fr] gap-[12px] border-t border-navy-700 py-[10px] lg:grid-cols-1 lg:gap-1 lg:py-[11px] xl:grid-cols-[96px_1fr] xl:gap-4"
           >
             <span className="eyebrow pt-1 tracking-[3px] text-papel-700 lg:tracking-eyebrow">{line.label}</span>
             <span className="font-body text-[14px] leading-[1.5] text-papel-500">{line.text}</span>

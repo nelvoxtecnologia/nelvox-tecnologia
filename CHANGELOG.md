@@ -45,3 +45,14 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   **Responsável**: Claude Code. **Impacto LGPD**: nenhum — é reorganização de rota e
   navegação; nenhum dado novo é coletado e o consentimento continua controlando os
   mesmos dois scripts (GA4/Meta) do jeito que já estava.
+
+## 2026-09-30
+- **Alteração**: banner de cookies (`ConsentBanner.tsx`) mais compacto em tablet/desktop
+  (largura máxima 320px a partir de `sm`, espaçamentos internos e altura dos botões menores),
+  para não cobrir a headline da Cena 1 em notebooks de tela baixa. Só estilo: textos, ordem
+  dos botões ("Aceitar" e "Recusar" com o mesmo peso), lógica de gravação e leitura do
+  consentimento inalteradas. Validado com IDs de teste: antes da escolha, 0 requisições a
+  Google/Meta e Consent Mode com tudo `denied`; "Recusar" → 0 requisições; "Aceitar" → GA4 e
+  Meta Pixel carregam (1366×641 e 390×844).
+  **Responsável**: Claude Code. **Impacto LGPD**: nenhum — mesmo opt-in, mesmas opções com o
+  mesmo destaque; nenhum dado novo coletado.

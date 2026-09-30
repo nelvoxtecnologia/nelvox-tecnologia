@@ -59,6 +59,11 @@ feixe), `eyebrow`, `title`, `audience` e `lines`. O grid em
   varredura infinita do feixe. As medidas (tamanhos, posições) ficam
   em constantes no topo do arquivo (`SIZE`, `TOP_OFFSET`,
   `DOCK_OFFSET`, `DOCK_OPACITY`).
+  As medidas de desktop valem para uma tela de 900px de altura
+  (`DESKTOP_REFERENCE_HEIGHT`); em telas mais baixas o farol central encolhe
+  na mesma proporção (mínimo `DESKTOP_MIN_SCALE`), junto com o início do
+  texto e o tamanho da headline da Cena 1 (`SceneHero.tsx` e `.hero-headline`
+  em `globals.css`). Mudou uma dessas três coisas, conferir as outras duas.
 
 O farol é renderizado uma vez por página (`src/app/page.tsx`,
 `src/appquem-somos/page.tsx`, `src/apppolitica-de-privacidade/page.tsx`). Em

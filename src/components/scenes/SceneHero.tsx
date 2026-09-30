@@ -86,14 +86,16 @@ export function SceneHero() {
       className={`relative flex min-h-screen flex-col overflow-hidden ${lit ? "hero-glow" : ""}`}
     >
       {/* Bloco de texto: mobile a partir de y=350 (artboard 01B), desktop a partir
-          de y=500; margens de 24px no celular. */}
+          de y=500 numa tela de 900px de altura — em telas mais baixas sobe na
+          mesma proporção do farol (ver DESKTOP_REFERENCE_HEIGHT em Farol.tsx);
+          margens de 24px no celular. */}
       {lit && (
         <div
           data-hero-fade
-          className="mx-auto flex w-full max-w-container flex-col items-center gap-[20px] px-6 pt-[350px] text-center lg:gap-6 lg:px-20 lg:pt-[500px]"
+          className="mx-auto flex w-full max-w-container flex-col items-center gap-[20px] px-6 pt-[350px] text-center lg:gap-6 lg:px-20 lg:pt-[clamp(300px,calc(500*100vh/900),500px)]"
         >
           <p className="eyebrow">{SCENES.heroOn.eyebrow}</p>
-          <h1 className="max-w-4xl font-display text-display-xl-mobile font-light text-papel-300 lg:text-display-xl">
+          <h1 className="hero-headline max-w-4xl font-display text-display-xl-mobile font-light text-papel-300 lg:text-display-xl">
             <RichText text={SCENES.heroOn.headline} reveal="fog" />
           </h1>
           <p className="font-body text-body text-papel-500 lg:max-w-[31em]">{SCENES.heroOn.body}</p>
