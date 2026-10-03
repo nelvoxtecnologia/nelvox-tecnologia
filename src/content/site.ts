@@ -86,6 +86,10 @@ export const NAV_ORIGEM_HREF = "/quem-somos";
 export const NAV_ORIGEM_LABEL = "Quem somos";
 export const NAV_PRIVACIDADE_HREF = "/politica-de-privacidade";
 export const NAV_PLANOS_HREF = "/planos";
+export const NAV_TERMOS_HREF = "/termos-de-uso";
+export const NAV_TERMOS_LABEL = "Termos de uso";
+/** Data da versão em vigor do texto (docs/referencias/termos_de_uso_nelvox.md). Atualizar a cada mudança. */
+export const TERMS_UPDATED_AT = "3 de outubro de 2026";
 export const NAV_CTA = "Falar com a Nelvox";
 
 export const NAV_ITEMS = [{ label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF }] as const;
