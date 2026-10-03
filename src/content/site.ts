@@ -96,7 +96,9 @@ export const NAV_ITEMS = [{ label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF }] as
 
 export const FOOTER_LINKS = {
   quemSomos: { label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF },
+  planos: { label: "Planos", href: NAV_PLANOS_HREF },
   privacidade: { label: "Política de privacidade", href: NAV_PRIVACIDADE_HREF },
+  termos: { label: NAV_TERMOS_LABEL, href: NAV_TERMOS_HREF },
   /** `href: null` sinaliza que o link abre o diálogo de preferências, não navega. */
   preferenciasCookies: { label: "Preferências de cookies", href: null },
 } as const;
@@ -263,8 +265,7 @@ export const SCENES = {
 
 /* ===== RODAPÉ (Footer.tsx) ===== */
 export const FOOTER = {
-  tagline: "Presença com intenção.",
-  copyright: `Nelvox · ${CITY}, ${STATE}`,
+  tagline: SLOGAN,
 };
 
 /* ===== PÁGINA /ORIGEM ===== */
