@@ -332,7 +332,7 @@ export const PLANS_INTRO = {
   eyebrow: "Planos",
   headline: "Escolha o *tamanho* da luz.",
   intro:
-    "Cada plano calibra o que fica aceso — do site institucional até a presença " +
+    "Cada plano calibra o que fica aceso — da landing page até a presença " +
     "completa em Google e Instagram. Escolha pelo que o seu negócio precisa agora; " +
     "você pode crescer de plano quando fizer sentido.",
 };
@@ -345,7 +345,7 @@ export const PLANS = [
     monthly: "R$397/mês",
     slaLabel: "Resposta em até 8h úteis",
     includes: [
-      "Site institucional com até 5 seções",
+      "Landing page com até 5 seções",
       "SSL e hospedagem inclusos",
       "WhatsApp flutuante no site",
       "1 atualização por mês",
@@ -431,7 +431,13 @@ export const PRIVACY = {
     "Um farol só funciona se as pessoas confiam nele. Esta página explica, com clareza, " +
     "quais dados o site da Nelvox coleta, por que coleta e o que você pode fazer com eles, " +
     "conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).",
-  updatedAt: "24 de setembro de 2026",
+  updatedAt: "3 de outubro de 2026",
+  /** Remissão aos Termos de uso, que por sua vez citam esta política (item 1 dos Termos). */
+  termosNote: {
+    before: "Para as regras de uso do site, veja os",
+    link: { label: NAV_TERMOS_LABEL, href: NAV_TERMOS_HREF },
+    after: ".",
+  },
   tocLabel: "Nesta página",
   /** A ordem daqui é a do índice e a da numeração (01, 02…) na página. */
   titles: [
@@ -470,6 +476,12 @@ export const PRIVACY = {
           "informações sobre o seu negócio que você decidir compartilhar.",
       },
       {
+        title: "Dados de quem contrata",
+        text:
+          "Se você contratar um plano: os dados para o contrato e a cobrança (nome, CPF ou CNPJ, " +
+          "endereço, e-mail e telefone) e o registro da assinatura eletrônica.",
+      },
+      {
         title: "Dados de navegação",
         text:
           "Endereço IP, tipo de dispositivo e navegador, páginas visitadas, tempo de visita e a " +
@@ -486,7 +498,7 @@ export const PRIVACY = {
   usos: {
     items: [
       { icon: "chat", text: "Responder o seu contato e entender a necessidade do seu negócio." },
-      { icon: "file", text: "Preparar propostas e prestar os serviços contratados." },
+      { icon: "file", text: "Preparar propostas, formalizar o contrato, cobrar e prestar os serviços contratados." },
       { icon: "chart", text: "Medir, de forma agregada, como o site é usado, para melhorá-lo." },
       { icon: "shield", text: "Manter o site seguro e cumprir obrigações legais." },
     ],
@@ -498,7 +510,10 @@ export const PRIVACY = {
     lead: "Cada tratamento se apoia em uma hipótese do art. 7º da LGPD:",
     rows: [
       { term: "Consentimento", text: "Cookies de análise e de marketing." },
-      { term: "Procedimentos de contrato", text: "Conversas, propostas e a prestação do serviço." },
+      {
+        term: "Procedimentos de contrato",
+        text: "Conversas, propostas, assinatura do contrato, cobrança e a prestação do serviço.",
+      },
       { term: "Legítimo interesse", text: "Segurança do site e cookies estritamente necessários." },
       {
         term: "Obrigação legal",
@@ -522,13 +537,13 @@ export const PRIVACY = {
         title: "Análise",
         badge: { label: "Com consentimento", filled: false },
         text: "Mostram, de forma agregada, quais páginas são visitadas e de onde vêm os visitantes.",
-        meta: "_ga, _ga_* · Google Analytics · até 2 anos",
+        meta: "_ga, _ga_* · Google Analytics (Google) · até 2 anos",
       },
       {
         title: "Marketing",
         badge: { label: "Com consentimento", filled: false },
         text: "Ajudam a medir anúncios e a mostrar conteúdo relevante em outras plataformas.",
-        meta: "_fbp, _fbc, fr · Meta · até 3 meses",
+        meta: "_fbp, _fbc, fr · Meta Pixel (Meta) · até 3 meses",
       },
     ],
     manage: "Gerenciar cookies",
@@ -536,10 +551,18 @@ export const PRIVACY = {
   },
 
   compartilhamento: {
-    lead: "Apenas com fornecedores necessários para operar o site e o atendimento, sempre com o mínimo de dados:",
+    lead: "Apenas com fornecedores necessários para operar o site, o atendimento e a contratação, sempre com o mínimo de dados:",
     rows: [
       { term: "Hospedagem", text: "Hostinger — mantém o site no ar." },
       { term: "Atendimento", text: "WhatsApp (Meta) — canal das conversas." },
+      {
+        term: "Contratos e cobrança",
+        text: "ZapSign (assinatura eletrônica do contrato) e Asaas (cobrança do setup e das mensalidades).",
+      },
+      {
+        term: "Armazenamento",
+        text: "Google (Drive e Planilhas) — propostas, contratos e planilhas de atendimento.",
+      },
       { term: "Análise e anúncios", text: "Google e Meta — só se você aceitar esses cookies." },
       { term: "Autoridades", text: "Quando houver ordem judicial ou obrigação legal." },
     ],
@@ -588,7 +611,7 @@ export const PRIVACY = {
 
   alteracoes:
     "Quando esta política mudar, a data no topo da página será atualizada. Mudanças relevantes " +
-    "serão avisadas no próprio site.",
+    "serão avisadas no próprio site, com pelo menos 10 dias de antecedência.",
 
   encarregado: {
     lead: "Dúvidas ou pedidos sobre seus dados vão direto para o nosso encarregado (DPO):",
@@ -622,7 +645,7 @@ export const PAGE_META = {
   planos: {
     title: "Planos — Nelvox",
     description:
-      "Planos de presença digital da Nelvox, de Porto Seguro, BA: do site institucional à gestão de " +
+      "Planos de presença digital da Nelvox, de Porto Seguro, BA: da landing page à gestão de " +
       "Google Meu Negócio e Instagram. Veja o que cada um inclui.",
   },
   termos: {

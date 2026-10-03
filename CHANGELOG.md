@@ -70,3 +70,18 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   **Responsável**: Claude Code. **Impacto LGPD**: sim, positivo — o controlador e o canal de
   contato passam a estar identificados em todas as páginas, e os Termos reforçam o opt-in; nenhuma
   coleta nova, nenhum script novo e nenhum disparo antes do consentimento.
+
+- **Alteração**: política de privacidade (`PRIVACY` em `site.ts`, `PrivacyContent.tsx`) alinhada ao
+  Playbook V5.3, à auditoria documental de 01/10/2026 e aos Termos de uso: novo card "Dados de quem
+  contrata" (nome, CPF ou CNPJ, endereço, e-mail, telefone e registro da assinatura eletrônica);
+  fornecedores de contratação e armazenamento (ZapSign, Asaas, Google Drive e Planilhas) na seção 6;
+  contrato, cobrança e assinatura como finalidade e base ("procedimentos de contrato"); aviso de
+  mudanças "com pelo menos 10 dias de antecedência" (igual aos Termos); remissão aos Termos de uso;
+  nomes dos cookies de análise e marketing com o produto (Google Analytics, Meta Pixel); data de
+  atualização 3 de outubro de 2026. Banner e diálogo de preferências revisados e **sem alteração**
+  (nenhuma caixa pré-marcada, Aceitar e Recusar com o mesmo peso, Cancelar não grava, revogação
+  pelo rodapé); `CONSENT_VERSION` não foi alterado porque nenhuma categoria nem finalidade de
+  cookie mudou.
+  **Responsável**: Claude Code (a partir do Playbook e da auditoria do Douglas; o texto ainda precisa
+  de validação jurídica). **Impacto LGPD**: sim — a política passa a declarar tratamentos e
+  operadores que já existiam na contratação; nenhuma coleta nova e nenhum script novo.

@@ -88,6 +88,13 @@ export function PrivacyContent() {
           <RichText text={P.headline} />
         </h1>
         <p className={`${paragraph} max-w-[40em]`}>{P.intro}</p>
+        <p className={`${paragraph} max-w-[40em]`}>
+          {P.termosNote.before}{" "}
+          <a href={P.termosNote.link.href} className="text-gold-400 underline underline-offset-4 hover:text-gold-bright">
+            {P.termosNote.link.label}
+          </a>
+          {P.termosNote.after}
+        </p>
         <span className="font-body text-caption text-papel-700">Última atualização: {P.updatedAt}</span>
       </header>
 

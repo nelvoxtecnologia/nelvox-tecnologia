@@ -50,9 +50,11 @@ tarefa. Em ambos, a correção feita é a que de fato resolvia o problema.
 - `@graph` com `ProfessionalService` (legalName, taxID, telefone, e-mail, endereço só com cidade/UF/país,
   areaServed, horário, fundador, sameAs) e `WebSite`. Campo vazio faz a chave sumir (`prune`).
 - **sameAs:** Instagram e Google Meu Negócio. O `wa.me` que existia saiu (WhatsApp não é perfil).
-- **Sem `logo`:** nenhum PNG de `public/brand/` serve. Três têm fundo opaco; o único com canal alfa
-  (`favicon-source.png`, 73,7% transparente) tem o símbolo em bege quase branco `rgb(225,219,211)`, ilegível
-  sobre fundo branco, que é onde o Google exibe logos.
+- **`logo`:** inicialmente omitido, porque nenhum PNG de `public/brand/` servia (três com fundo opaco; o único
+  com alfa tinha o símbolo em bege quase branco). Depois o Douglas enviou a logo em SVG e PNG: o símbolo
+  (`public/brand/simbolo_nelvox.svg` e `.png`, 1024×1024, 71,3% transparente) passou a ser o `logo` do schema.
+  **Ressalva:** o símbolo é bege claro (`#d9d4cc` a `#f3eee7`) e o Google exibe logos sobre branco, então
+  aparece pálido. Alternativa de uma linha em `schema.ts`: `simbolo_nelvox_gold_navy.png` (fundo escuro).
 - Sem `aggregateRating`, `review` nem `priceRange`.
 - **Aceite:** servido, passa em `JSON.parse`, sem valor vazio e sem `<`.
 
@@ -169,11 +171,49 @@ Metadados, schema, sitemap e `llms.txt` não têm efeito visual.
    `{{DATA}}`; a data usada é 3 de outubro de 2026 (`TERMS_UPDATED_AT` em `site.ts`).
 2. **Divergências entre Política de privacidade e Termos/banner:** prazo de aviso de alterações (10 dias nos
    Termos, sem prazo na Política) e "Meta" × "Meta Pixel". A Política não foi editada.
-3. **Logo do schema:** para ativar `logo`, enviar um PNG com fundo transparente e contraste sobre branco (por
-   exemplo, wordmark em azul-marinho/dourado).
+3. **Logo do schema:** ativada com o símbolo enviado (transparente, mas bege claro, pálido sobre branco).
+   Decidir se fica assim ou se troca por uma versão com fundo escuro ou em azul-marinho/dourado.
 4. **Google Meu Negócio:** o link curto resolve para a busca "Nelvox" (`kgmid=/g/11z8dpxnz0`), não para uma URL
    `/maps/place/` ou `cid=`. O briefing e a mensagem trouxeram dois links diferentes
    (`…/6lVYdssUDnYeOhg4J` e `…/1byQLfMtI7OHcWanh`); ambos levam ao mesmo perfil e foi usado o mais recente.
    Se você tiver a URL do Maps, troque `GMB_URL` em `site.ts`.
 5. **Vazios omitidos de propósito:** endereço, CEP, LinkedIn e `GSC_TOKEN`. Preencher em `site.ts` ou
    `layout.tsx` quando existirem. Google Meu Negócio e Search Console seguem manuais, fora do escopo.
+
+## Complemento de 3 de outubro (à tarde): Política, Essencial e logo
+
+Pedido do Douglas, depois da entrega acima. Base: auditoria documental de 01/10/2026 e Playbook V5.3.
+
+- **Plano Essencial:** "Site institucional com até 5 seções" virou **"Landing page com até 5 seções"** (o texto
+  no site dizia "seções", não "páginas"; mantive o limite de 5 seções). Para não ficar incoerente, também
+  trocados "do site institucional" por "da landing page" na introdução de `/planos` e na descrição da página.
+  Os outros planos não foram alterados.
+- **Política de privacidade:** novo card "Dados de quem contrata"; seção 6 com ZapSign, Asaas e Google
+  (Drive e Planilhas); finalidade e base legal cobrindo contrato, cobrança e assinatura; aviso de mudanças
+  "com pelo menos 10 dias de antecedência" (igual aos Termos); remissão aos Termos; cookies com o nome do
+  produto; data 3 de outubro de 2026. Isso resolve a divergência 2 das decisões pendentes (prazo de aviso e
+  "Meta" × "Meta Pixel").
+- **Banner e diálogo de preferências:** revisados, **sem alteração** (nenhuma caixa pré-marcada, Aceitar e
+  Recusar com o mesmo peso, Cancelar não grava, revogação pelo rodapé, link da política no banner).
+  `CONSENT_VERSION` não subiu porque nenhuma categoria nem finalidade de cookie mudou.
+- **Logo:** `simbolo_nelvox.svg` e `simbolo_nelvox.png` (1024×1024, transparente, gerado do SVG) em
+  `public/brand/`; usada no `logo` do schema. O PNG original de 12500×12500 não foi para o repositório: é
+  pesado demais para o site servir e para um buscador baixar.
+
+### O que a auditoria pede e **não** foi publicado na Política (decisão sua ou do advogado)
+
+1. **Dados de prospecção.** A Nelvox prospecta leads (pipeline no Google Sheets, SDR, aba Supressão para
+   opt-out) e a Política só fala de quem chama pelo WhatsApp. Dados obtidos de terceiros pedem aviso ao titular
+   (LGPD art. 9º). Não publiquei porque base legal e prazo ainda são recomendações da auditoria (colunas
+   "Base legal" e "Data de exclusão programada" a criar; item 24: 6 meses sem resposta). Proposta de texto, a
+   validar: "Contatos comerciais de empresas: nome do negócio, telefone e endereço públicos (por exemplo, no
+   Google). Base: legítimo interesse. Guardamos por até 6 meses sem resposta; você pode pedir a exclusão e
+   não ser mais contatado a qualquer momento."
+2. **Prazos que não batem:** a Política guarda "conversas sem contrato" por 12 meses (confirmado pelo
+   Douglas em 27/09); a auditoria sugere 6 meses para leads sem resposta. Podem ser grupos diferentes, mas
+   convém decidir e deixar um só critério.
+3. **Fornecedores.** ZapSign, Asaas e Google Drive/Planilhas vieram do fluxo do Playbook descrito na
+   auditoria; confirme que a lista está completa.
+4. **Validação jurídica** (⚖️ na auditoria, item 12 do plano): a Política nunca passou por advogado.
+5. **Enquadramento MEI** (🧾, achado nº 1 da auditoria) segue sem resposta do contador e **não** foi tocado
+   no texto público.
