@@ -84,6 +84,8 @@ export const SCENES = {
   },
 
   heroOn: {
+    /** H1 da home (SEO): fica na página desde o carregamento, em tipografia de apoio. */
+    h1: "Nelvox — criação de sites e presença digital em Porto Seguro, BA",
     eyebrow: "01 · Porto Seguro, BA",
     headline: "Todo porto precisa\nde *uma luz*.",
     body:
