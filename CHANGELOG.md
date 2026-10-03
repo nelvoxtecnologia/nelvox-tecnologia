@@ -85,3 +85,14 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   **Responsável**: Claude Code (a partir do Playbook e da auditoria do Douglas; o texto ainda precisa
   de validação jurídica). **Impacto LGPD**: sim — a política passa a declarar tratamentos e
   operadores que já existiam na contratação; nenhuma coleta nova e nenhum script novo.
+
+- **Alteração**: política de privacidade passa a cobrir o contato comercial com empresas
+  (prospecção): novo card "Contatos comerciais de empresas" (dados públicos de contato; quem não
+  quiser ser contatado avisa e o pedido é registrado numa lista de supressão), base "legítimo
+  interesse" estendida a esse contato e novo prazo de retenção "Contatos comerciais sem resposta:
+  até 6 meses" (prazo da auditoria documental de 01/10/2026, confirmado pelo Douglas). Fornecedores
+  já listados (ZapSign, Asaas, Google) confirmados pelo Douglas. Banner e diálogo de preferências
+  não foram alterados; `CONSENT_VERSION` mantido (nenhuma categoria de cookie mudou).
+  **Responsável**: Claude Code (a partir da auditoria e das confirmações do Douglas; o texto ainda
+  precisa de validação jurídica). **Impacto LGPD**: sim — a política passa a informar um tratamento
+  que já ocorria (art. 9º da LGPD); nenhuma coleta nova e nenhum script novo.

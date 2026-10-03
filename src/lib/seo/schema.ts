@@ -23,9 +23,9 @@ import {
    Deliberadamente ausentes: aggregateRating, review e priceRange (não há avaliações reais a
    declarar e schema inventado é penalizado).
 
-   `logo`: símbolo com fundo transparente (public/brand/simbolo_nelvox.png, gerado do SVG). Atenção:
-   o símbolo é bege claro e o Google exibe logos sobre branco, então ele aparece pálido. Se isso
-   incomodar, trocar por um PNG com fundo escuro, como simbolo_nelvox_gold_navy.png. */
+   `logo`: símbolo dourado sobre fundo azul-marinho (public/brand/simbolo_nelvox_gold_navy.png). O
+   fundo escuro garante contraste: o Google exibe logos sobre branco e o símbolo transparente, em
+   bege claro, ficaria pálido (public/brand/simbolo_nelvox.png/.svg seguem na pasta para outros usos). */
 
 type Json = string | number | boolean | null | undefined | Json[] | { [key: string]: Json };
 
@@ -57,7 +57,7 @@ export const schema = prune({
       name: "Nelvox",
       legalName: LEGAL_NAME,
       url: SITE_URL,
-      logo: `${SITE_URL}/brand/simbolo_nelvox.png`,
+      logo: `${SITE_URL}/brand/simbolo_nelvox_gold_navy.png`,
       image: `${SITE_URL}/opengraph-image.png`,
       description: SITE_DESCRIPTION,
       slogan: SLOGAN,

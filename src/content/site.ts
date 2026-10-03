@@ -111,8 +111,6 @@ export const SCENES = {
   },
 
   heroOn: {
-    /** H1 da home (SEO): fica na página desde o carregamento, em tipografia de apoio. */
-    h1: "Nelvox — criação de sites e presença digital em Porto Seguro, BA",
     eyebrow: "01 · Porto Seguro, BA",
     headline: "Todo porto precisa\nde *uma luz*.",
     body:
@@ -482,6 +480,14 @@ export const PRIVACY = {
           "endereço, e-mail e telefone) e o registro da assinatura eletrônica.",
       },
       {
+        title: "Contatos comerciais de empresas",
+        text:
+          "Para oferecer nossos serviços, podemos entrar em contato com negócios cujos dados são " +
+          "públicos (nome do negócio, telefone e endereço, por exemplo no Google). Se você não quiser " +
+          "ser contatado, é só avisar: paramos e registramos o pedido numa lista de supressão, para " +
+          "não procurar você de novo.",
+      },
+      {
         title: "Dados de navegação",
         text:
           "Endereço IP, tipo de dispositivo e navegador, páginas visitadas, tempo de visita e a " +
@@ -514,7 +520,10 @@ export const PRIVACY = {
         term: "Procedimentos de contrato",
         text: "Conversas, propostas, assinatura do contrato, cobrança e a prestação do serviço.",
       },
-      { term: "Legítimo interesse", text: "Segurança do site e cookies estritamente necessários." },
+      {
+        term: "Legítimo interesse",
+        text: "Segurança do site, cookies estritamente necessários e o contato comercial com empresas.",
+      },
       {
         term: "Obrigação legal",
         text: "Registros exigidos por lei, como o Marco Civil da Internet e a legislação fiscal.",
@@ -576,6 +585,7 @@ export const PRIVACY = {
   retencao: {
     rows: [
       { term: "Conversas sem contrato", text: "Até 12 meses após o último contato." },
+      { term: "Contatos comerciais sem resposta", text: "Até 6 meses." },
       {
         term: "Clientes",
         text: "Durante o contrato e pelo prazo exigido pela legislação fiscal (5 anos).",
