@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { RichText } from "@/components/ui/RichText";
+import { RichText, plainText } from "@/components/ui/RichText";
 import { SCENES } from "@/content/site";
 import { useFarolLit } from "@/lib/useFarolLit";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -34,7 +34,7 @@ export function SceneHero() {
     /* A neblina termina no espaçamento de letras DO PRÓPRIO título (−1px no
        celular, −1,5px no desktop) — terminar em 0 deixava a headline mais larga
        que a do design depois da animação. */
-    const restingTracking = getComputedStyle(root.querySelector("h1") ?? root).letterSpacing;
+    const restingTracking = getComputedStyle(root.querySelector("[data-hero-headline]") ?? root).letterSpacing;
 
     gsap.to(words, {
       opacity: 1,
@@ -85,19 +85,40 @@ export function SceneHero() {
       data-scene="1"
       className={`relative flex min-h-screen flex-col overflow-hidden ${lit ? "hero-glow" : ""}`}
     >
+      {/* H1 da página: está sempre no HTML servido (a home só tinha h1 depois do clique
+          no farol) e sempre visível. Antes do clique é uma legenda discreta na base da
+          tela, abaixo do "TOQUE NO FAROL" (que fica a 120px/88px da base); depois, passa
+          para o topo do bloco de texto, logo acima do eyebrow. Um único elemento, só
+          muda de posição, para nunca haver dois h1. */}
+      <h1
+        data-hero-fade
+        className={
+          lit
+            ? "mx-auto w-full max-w-container px-6 pt-[316px] text-center font-body text-caption text-papel-500 lg:px-20 lg:pt-[clamp(272px,calc(500*100vh/900-28px),472px)]"
+            : "absolute inset-x-0 bottom-[64px] px-6 text-center font-body text-caption text-papel-500 lg:bottom-[44px] lg:px-20"
+        }
+      >
+        {SCENES.heroOn.h1}
+      </h1>
+
       {/* Bloco de texto: mobile a partir de y=350 (artboard 01B), desktop a partir
           de y=500 numa tela de 900px de altura — em telas mais baixas sobe na
           mesma proporção do farol (ver DESKTOP_REFERENCE_HEIGHT em Farol.tsx);
-          margens de 24px no celular. */}
+          margens de 24px no celular. O h1 acima ocupa ~34px do começo desse espaço
+          (por isso os pt dele são 34px menores que os de antes). */}
       {lit && (
         <div
           data-hero-fade
-          className="mx-auto flex w-full max-w-container flex-col items-center gap-[20px] px-6 pt-[350px] text-center lg:gap-6 lg:px-20 lg:pt-[clamp(300px,calc(500*100vh/900),500px)]"
+          className="mx-auto flex w-full max-w-container flex-col items-center gap-[20px] px-6 pt-[20px] text-center lg:gap-6 lg:px-20 lg:pt-6"
         >
           <p className="eyebrow">{SCENES.heroOn.eyebrow}</p>
-          <h1 className="hero-headline max-w-4xl font-display text-display-xl-mobile font-light text-papel-300 lg:text-display-xl">
+          <h2
+            data-hero-headline
+            aria-label={plainText(SCENES.heroOn.headline)}
+            className="hero-headline max-w-4xl font-display text-display-xl-mobile font-light text-papel-300 lg:text-display-xl"
+          >
             <RichText text={SCENES.heroOn.headline} reveal="fog" />
-          </h1>
+          </h2>
           <p className="font-body text-body text-papel-500 lg:max-w-[31em]">{SCENES.heroOn.body}</p>
         </div>
       )}

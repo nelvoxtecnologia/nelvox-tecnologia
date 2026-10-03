@@ -56,3 +56,32 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   Meta Pixel carregam (1366×641 e 390×844).
   **Responsável**: Claude Code. **Impacto LGPD**: nenhum — mesmo opt-in, mesmas opções com o
   mesmo destaque; nenhum dado novo coletado.
+
+## 2026-10-03
+- **Alteração**: branch `fix/seo-fundacao` (SEO). Rodapé (`Footer.tsx`, que abriga o botão
+  "Preferências de cookies", mantido sem alteração) ganhou identificação do controlador (razão
+  social, CNPJ, e-mail, WhatsApp, horário) e links para Planos, Termos de uso, Instagram e Google
+  Meu Negócio (links comuns, abrem em nova aba com `rel="noopener noreferrer"`; **nenhum script de
+  terceiro novo**, então a Regra 4 não se aplica). Nova página `/termos-de-uso`, com texto que cita
+  Google Analytics e Meta Pixel só com consentimento e remete às "Preferências de cookies". JSON-LD
+  ampliado (`src/lib/seo/schema.ts`: razão social, CNPJ, telefone, e-mail, horário, fundador,
+  perfis) — são dados institucionais da empresa, sem dado pessoal de visitante. `GA4` e `Meta Pixel`,
+  `Tracking.tsx`, `ConsentBanner.tsx` e o Consent Mode não foram alterados.
+  **Responsável**: Claude Code. **Impacto LGPD**: sim, positivo — o controlador e o canal de
+  contato passam a estar identificados em todas as páginas, e os Termos reforçam o opt-in; nenhuma
+  coleta nova, nenhum script novo e nenhum disparo antes do consentimento.
+
+- **Alteração**: política de privacidade (`PRIVACY` em `site.ts`, `PrivacyContent.tsx`) alinhada ao
+  Playbook V5.3, à auditoria documental de 01/10/2026 e aos Termos de uso: novo card "Dados de quem
+  contrata" (nome, CPF ou CNPJ, endereço, e-mail, telefone e registro da assinatura eletrônica);
+  fornecedores de contratação e armazenamento (ZapSign, Asaas, Google Drive e Planilhas) na seção 6;
+  contrato, cobrança e assinatura como finalidade e base ("procedimentos de contrato"); aviso de
+  mudanças "com pelo menos 10 dias de antecedência" (igual aos Termos); remissão aos Termos de uso;
+  nomes dos cookies de análise e marketing com o produto (Google Analytics, Meta Pixel); data de
+  atualização 3 de outubro de 2026. Banner e diálogo de preferências revisados e **sem alteração**
+  (nenhuma caixa pré-marcada, Aceitar e Recusar com o mesmo peso, Cancelar não grava, revogação
+  pelo rodapé); `CONSENT_VERSION` não foi alterado porque nenhuma categoria nem finalidade de
+  cookie mudou.
+  **Responsável**: Claude Code (a partir do Playbook e da auditoria do Douglas; o texto ainda precisa
+  de validação jurídica). **Impacto LGPD**: sim — a política passa a declarar tratamentos e
+  operadores que já existiam na contratação; nenhuma coleta nova e nenhum script novo.

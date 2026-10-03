@@ -4,19 +4,24 @@ import { Farol } from "@/components/farol/Farol";
 import { CursorHalo } from "@/components/ui/CursorHalo";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { PlansContent } from "@/components/plans/PlansContent";
+import { TermsContent } from "@/components/legal/TermsContent";
 import { BackLink } from "@/components/ui/BackLink";
+import { loadTerms } from "@/lib/legal/terms";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { PAGE_META, NAV_PLANOS_HREF } from "@/content/site";
+import { PAGE_META, NAV_TERMOS_HREF } from "@/content/site";
 
 export const metadata: Metadata = pageMetadata({
-  ...PAGE_META.planos,
-  path: NAV_PLANOS_HREF,
+  ...PAGE_META.termos,
+  path: NAV_TERMOS_HREF,
 });
 
-export default function PlanosPage() {
+export default function TermosDeUsoPage() {
+  const terms = loadTerms();
+
   return (
     <>
+      {/* PENDENTE: validação jurídica antes do merge. O texto (docs/referencias/termos_de_uso_nelvox.md)
+          ainda não passou por revisão jurídica. Este comentário não vai para a página. */}
       <Preloader />
       <CursorHalo />
       <Farol initialDocked />
@@ -27,7 +32,7 @@ export default function PlanosPage() {
           <BackLink />
         </div>
         <div className="brand-container">
-          <PlansContent />
+          <TermsContent terms={terms} />
         </div>
       </main>
 

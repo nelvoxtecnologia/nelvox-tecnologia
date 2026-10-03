@@ -36,6 +36,27 @@ export const DPO_NAME = "Douglas Barbosa Alves";
 /** Contato para pedidos da LGPD (seção 13 da política). */
 export const PRIVACY_EMAIL = EMAIL;
 
+/* ===== IDENTIFICAÇÃO PÚBLICA =====
+   Fonte única do rodapé, do JSON-LD (src/lib/seo/schema.ts) e do llms.txt.
+   String vazia = "omitir": nada vazio é publicado (schema e rodapé pulam o campo).
+   A Nelvox é MEI e não tem sócios: o único nome de pessoa é o do fundador. */
+export const FOUNDER_NAME = "Douglas Barbosa Alves";
+export const SLOGAN = "Presença com intenção.";
+export const SITE_DESCRIPTION =
+  "Software house em Porto Seguro, BA. Cria sites e presença digital (site, Google Meu Negócio e " +
+  "Instagram) para negócios de saúde, turismo e negócios locais.";
+export const PHONE_E164 = "+55-73-99831-3910";
+export const PHONE_DISPLAY = "(73) 99831-3910";
+export const OPENING_HOURS_LABEL = "Seg a sex, 8h às 18h";
+export const INSTAGRAM_URL = "https://www.instagram.com/nelvox.tech/";
+/** Link curto de compartilhamento da ficha no Google. Resolve para a busca "Nelvox"
+    (kgmid /g/11z8dpxnz0), não para uma URL /maps/place/ — por isso fica o link curto. */
+export const GMB_URL = "https://share.google/1byQLfMtI7OHcWanh";
+export const LINKEDIN_URL = "";
+/** Endereço residencial: não publicado (ver LEGAL_NAME). Preencher só se isso mudar. */
+export const STREET_ADDRESS = "";
+export const POSTAL_CODE = "";
+
 /** Mensagem que já vem digitada ao abrir a conversa. */
 const WHATSAPP_GREETING =
   "Olá! Vim pelo site e queria entender onde está a luz que falta no meu negócio.";
@@ -65,13 +86,19 @@ export const NAV_ORIGEM_HREF = "/quem-somos";
 export const NAV_ORIGEM_LABEL = "Quem somos";
 export const NAV_PRIVACIDADE_HREF = "/politica-de-privacidade";
 export const NAV_PLANOS_HREF = "/planos";
+export const NAV_TERMOS_HREF = "/termos-de-uso";
+export const NAV_TERMOS_LABEL = "Termos de uso";
+/** Data da versão em vigor do texto (docs/referencias/termos_de_uso_nelvox.md). Atualizar a cada mudança. */
+export const TERMS_UPDATED_AT = "3 de outubro de 2026";
 export const NAV_CTA = "Falar com a Nelvox";
 
 export const NAV_ITEMS = [{ label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF }] as const;
 
 export const FOOTER_LINKS = {
   quemSomos: { label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF },
+  planos: { label: "Planos", href: NAV_PLANOS_HREF },
   privacidade: { label: "Política de privacidade", href: NAV_PRIVACIDADE_HREF },
+  termos: { label: NAV_TERMOS_LABEL, href: NAV_TERMOS_HREF },
   /** `href: null` sinaliza que o link abre o diálogo de preferências, não navega. */
   preferenciasCookies: { label: "Preferências de cookies", href: null },
 } as const;
@@ -84,6 +111,8 @@ export const SCENES = {
   },
 
   heroOn: {
+    /** H1 da home (SEO): fica na página desde o carregamento, em tipografia de apoio. */
+    h1: "Nelvox — criação de sites e presença digital em Porto Seguro, BA",
     eyebrow: "01 · Porto Seguro, BA",
     headline: "Todo porto precisa\nde *uma luz*.",
     body:
@@ -236,8 +265,7 @@ export const SCENES = {
 
 /* ===== RODAPÉ (Footer.tsx) ===== */
 export const FOOTER = {
-  tagline: "Presença com intenção.",
-  copyright: `Nelvox · ${CITY}, ${STATE}`,
+  tagline: SLOGAN,
 };
 
 /* ===== PÁGINA /ORIGEM ===== */
@@ -304,7 +332,7 @@ export const PLANS_INTRO = {
   eyebrow: "Planos",
   headline: "Escolha o *tamanho* da luz.",
   intro:
-    "Cada plano calibra o que fica aceso — do site institucional até a presença " +
+    "Cada plano calibra o que fica aceso — da landing page até a presença " +
     "completa em Google e Instagram. Escolha pelo que o seu negócio precisa agora; " +
     "você pode crescer de plano quando fizer sentido.",
 };
@@ -317,7 +345,7 @@ export const PLANS = [
     monthly: "R$397/mês",
     slaLabel: "Resposta em até 8h úteis",
     includes: [
-      "Site institucional com até 5 seções",
+      "Landing page com até 5 seções",
       "SSL e hospedagem inclusos",
       "WhatsApp flutuante no site",
       "1 atualização por mês",
@@ -403,7 +431,13 @@ export const PRIVACY = {
     "Um farol só funciona se as pessoas confiam nele. Esta página explica, com clareza, " +
     "quais dados o site da Nelvox coleta, por que coleta e o que você pode fazer com eles, " +
     "conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).",
-  updatedAt: "24 de setembro de 2026",
+  updatedAt: "3 de outubro de 2026",
+  /** Remissão aos Termos de uso, que por sua vez citam esta política (item 1 dos Termos). */
+  termosNote: {
+    before: "Para as regras de uso do site, veja os",
+    link: { label: NAV_TERMOS_LABEL, href: NAV_TERMOS_HREF },
+    after: ".",
+  },
   tocLabel: "Nesta página",
   /** A ordem daqui é a do índice e a da numeração (01, 02…) na página. */
   titles: [
@@ -442,6 +476,12 @@ export const PRIVACY = {
           "informações sobre o seu negócio que você decidir compartilhar.",
       },
       {
+        title: "Dados de quem contrata",
+        text:
+          "Se você contratar um plano: os dados para o contrato e a cobrança (nome, CPF ou CNPJ, " +
+          "endereço, e-mail e telefone) e o registro da assinatura eletrônica.",
+      },
+      {
         title: "Dados de navegação",
         text:
           "Endereço IP, tipo de dispositivo e navegador, páginas visitadas, tempo de visita e a " +
@@ -458,7 +498,7 @@ export const PRIVACY = {
   usos: {
     items: [
       { icon: "chat", text: "Responder o seu contato e entender a necessidade do seu negócio." },
-      { icon: "file", text: "Preparar propostas e prestar os serviços contratados." },
+      { icon: "file", text: "Preparar propostas, formalizar o contrato, cobrar e prestar os serviços contratados." },
       { icon: "chart", text: "Medir, de forma agregada, como o site é usado, para melhorá-lo." },
       { icon: "shield", text: "Manter o site seguro e cumprir obrigações legais." },
     ],
@@ -470,7 +510,10 @@ export const PRIVACY = {
     lead: "Cada tratamento se apoia em uma hipótese do art. 7º da LGPD:",
     rows: [
       { term: "Consentimento", text: "Cookies de análise e de marketing." },
-      { term: "Procedimentos de contrato", text: "Conversas, propostas e a prestação do serviço." },
+      {
+        term: "Procedimentos de contrato",
+        text: "Conversas, propostas, assinatura do contrato, cobrança e a prestação do serviço.",
+      },
       { term: "Legítimo interesse", text: "Segurança do site e cookies estritamente necessários." },
       {
         term: "Obrigação legal",
@@ -494,13 +537,13 @@ export const PRIVACY = {
         title: "Análise",
         badge: { label: "Com consentimento", filled: false },
         text: "Mostram, de forma agregada, quais páginas são visitadas e de onde vêm os visitantes.",
-        meta: "_ga, _ga_* · Google Analytics · até 2 anos",
+        meta: "_ga, _ga_* · Google Analytics (Google) · até 2 anos",
       },
       {
         title: "Marketing",
         badge: { label: "Com consentimento", filled: false },
         text: "Ajudam a medir anúncios e a mostrar conteúdo relevante em outras plataformas.",
-        meta: "_fbp, _fbc, fr · Meta · até 3 meses",
+        meta: "_fbp, _fbc, fr · Meta Pixel (Meta) · até 3 meses",
       },
     ],
     manage: "Gerenciar cookies",
@@ -508,10 +551,18 @@ export const PRIVACY = {
   },
 
   compartilhamento: {
-    lead: "Apenas com fornecedores necessários para operar o site e o atendimento, sempre com o mínimo de dados:",
+    lead: "Apenas com fornecedores necessários para operar o site, o atendimento e a contratação, sempre com o mínimo de dados:",
     rows: [
       { term: "Hospedagem", text: "Hostinger — mantém o site no ar." },
       { term: "Atendimento", text: "WhatsApp (Meta) — canal das conversas." },
+      {
+        term: "Contratos e cobrança",
+        text: "ZapSign (assinatura eletrônica do contrato) e Asaas (cobrança do setup e das mensalidades).",
+      },
+      {
+        term: "Armazenamento",
+        text: "Google (Drive e Planilhas) — propostas, contratos e planilhas de atendimento.",
+      },
       { term: "Análise e anúncios", text: "Google e Meta — só se você aceitar esses cookies." },
       { term: "Autoridades", text: "Quando houver ordem judicial ou obrigação legal." },
     ],
@@ -560,7 +611,7 @@ export const PRIVACY = {
 
   alteracoes:
     "Quando esta política mudar, a data no topo da página será atualizada. Mudanças relevantes " +
-    "serão avisadas no próprio site.",
+    "serão avisadas no próprio site, com pelo menos 10 dias de antecedência.",
 
   encarregado: {
     lead: "Dúvidas ou pedidos sobre seus dados vão direto para o nosso encarregado (DPO):",
@@ -583,6 +634,28 @@ function hasBracketPlaceholder(value: unknown): boolean {
 export const PRIVACY_HAS_PLACEHOLDER = hasBracketPlaceholder(PRIVACY);
 
 /* ===== METADADOS ===== */
+/** Título e descrição (até 155 caracteres) de cada rota interna. Só fatos oficiais, sem promessa de resultado. */
+export const PAGE_META = {
+  quemSomos: {
+    title: `${NAV_ORIGEM_LABEL} — Nelvox`,
+    description:
+      "Por que a Nelvox, software house de Porto Seguro, BA, trata presença digital como um farol, " +
+      "e como a empresa nasceu. Com método, não por sorte.",
+  },
+  planos: {
+    title: "Planos — Nelvox",
+    description:
+      "Planos de presença digital da Nelvox, de Porto Seguro, BA: da landing page à gestão de " +
+      "Google Meu Negócio e Instagram. Veja o que cada um inclui.",
+  },
+  termos: {
+    title: `${NAV_TERMOS_LABEL} — Nelvox`,
+    description:
+      "Condições de uso do site da Nelvox: uso adequado, propriedade intelectual, responsabilidade, " +
+      "cookies, dados pessoais e foro.",
+  },
+} as const;
+
 export const META = {
   title: "Nelvox — Criação de sites e presença digital em Porto Seguro, BA",
   description:
