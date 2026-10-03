@@ -56,3 +56,17 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   Meta Pixel carregam (1366×641 e 390×844).
   **Responsável**: Claude Code. **Impacto LGPD**: nenhum — mesmo opt-in, mesmas opções com o
   mesmo destaque; nenhum dado novo coletado.
+
+## 2026-10-03
+- **Alteração**: branch `fix/seo-fundacao` (SEO). Rodapé (`Footer.tsx`, que abriga o botão
+  "Preferências de cookies", mantido sem alteração) ganhou identificação do controlador (razão
+  social, CNPJ, e-mail, WhatsApp, horário) e links para Planos, Termos de uso, Instagram e Google
+  Meu Negócio (links comuns, abrem em nova aba com `rel="noopener noreferrer"`; **nenhum script de
+  terceiro novo**, então a Regra 4 não se aplica). Nova página `/termos-de-uso`, com texto que cita
+  Google Analytics e Meta Pixel só com consentimento e remete às "Preferências de cookies". JSON-LD
+  ampliado (`src/lib/seo/schema.ts`: razão social, CNPJ, telefone, e-mail, horário, fundador,
+  perfis) — são dados institucionais da empresa, sem dado pessoal de visitante. `GA4` e `Meta Pixel`,
+  `Tracking.tsx`, `ConsentBanner.tsx` e o Consent Mode não foram alterados.
+  **Responsável**: Claude Code. **Impacto LGPD**: sim, positivo — o controlador e o canal de
+  contato passam a estar identificados em todas as páginas, e os Termos reforçam o opt-in; nenhuma
+  coleta nova, nenhum script novo e nenhum disparo antes do consentimento.
