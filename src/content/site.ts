@@ -36,6 +36,27 @@ export const DPO_NAME = "Douglas Barbosa Alves";
 /** Contato para pedidos da LGPD (seção 13 da política). */
 export const PRIVACY_EMAIL = EMAIL;
 
+/* ===== IDENTIFICAÇÃO PÚBLICA =====
+   Fonte única do rodapé, do JSON-LD (src/lib/seo/schema.ts) e do llms.txt.
+   String vazia = "omitir": nada vazio é publicado (schema e rodapé pulam o campo).
+   A Nelvox é MEI e não tem sócios: o único nome de pessoa é o do fundador. */
+export const FOUNDER_NAME = "Douglas Barbosa Alves";
+export const SLOGAN = "Presença com intenção.";
+export const SITE_DESCRIPTION =
+  "Software house em Porto Seguro, BA. Cria sites e presença digital (site, Google Meu Negócio e " +
+  "Instagram) para negócios de saúde, turismo e negócios locais.";
+export const PHONE_E164 = "+55-73-99831-3910";
+export const PHONE_DISPLAY = "(73) 99831-3910";
+export const OPENING_HOURS_LABEL = "Seg a sex, 8h às 18h";
+export const INSTAGRAM_URL = "https://www.instagram.com/nelvox.tech/";
+/** Link curto de compartilhamento da ficha no Google. Resolve para a busca "Nelvox"
+    (kgmid /g/11z8dpxnz0), não para uma URL /maps/place/ — por isso fica o link curto. */
+export const GMB_URL = "https://share.google/1byQLfMtI7OHcWanh";
+export const LINKEDIN_URL = "";
+/** Endereço residencial: não publicado (ver LEGAL_NAME). Preencher só se isso mudar. */
+export const STREET_ADDRESS = "";
+export const POSTAL_CODE = "";
+
 /** Mensagem que já vem digitada ao abrir a conversa. */
 const WHATSAPP_GREETING =
   "Olá! Vim pelo site e queria entender onde está a luz que falta no meu negócio.";
