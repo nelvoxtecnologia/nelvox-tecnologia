@@ -19,13 +19,29 @@ type RichTextProps = {
   breaks?: "always" | "desktop" | "mobile";
 };
 
-/** Quebra de linha responsiva; o espaço garante que as palavras não colem quando a quebra some. */
+/**
+ * A frase como texto corrido, sem a marcação (`*ênfase*` e `
+`). Usada no `aria-label` do título
+ * quando o texto é dividido em palavras (`reveal`): o HTML passa a ter a frase inteira, contígua,
+ * além dos spans de cada palavra, que só existem para a animação.
+ */
+export function plainText(text: string): string {
+  return text.replaceAll("*", "").replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Quebra de linha responsiva. O espaço antes do <br> garante que as palavras não colem quando a
+ * quebra some (modos desktop/mobile) e que o `textContent` e o HTML tenham o espaço entre a última
+ * palavra de uma linha e a primeira da próxima ("precisa de", não "precisade") em qualquer modo.
+ * Visualmente não muda nada: o espaço fica no fim da linha e é colapsado.
+ */
 function LineBreak({ mode }: { mode: "always" | "desktop" | "mobile" }) {
-  if (mode === "always") return <br />;
   return (
     <>
       {" "}
-      <br className={mode === "desktop" ? "hidden lg:inline" : "lg:hidden"} />
+      <br
+        className={mode === "desktop" ? "hidden lg:inline" : mode === "mobile" ? "lg:hidden" : undefined}
+      />
     </>
   );
 }
@@ -104,12 +120,16 @@ function renderTokens(tokens: Token[], reveal: "fog" | "mission") {
 /**
  * Interpreta a marcação leve do conteúdo (ver site.ts) sem trazer um
  * parser de markdown completo — a marca só precisa de duas regras.
+ *
+ * Com `reveal`, as palavras viram spans animados e o wrapper sai com
+ * `aria-hidden`: quem nomeia o título é o `aria-label={plainText(text)}`
+ * que o elemento pai (h1/h2) deve receber.
  */
 export function RichText({ text, className, reveal, breaks = "always" }: RichTextProps) {
   const lines = text.split("\n");
 
   return (
-    <span className={className}>
+    <span className={className} aria-hidden={reveal ? true : undefined}>
       {lines.map((line, lineIndex) => (
         <Fragment key={lineIndex}>
           {lineIndex > 0 && <LineBreak mode={breaks} />}

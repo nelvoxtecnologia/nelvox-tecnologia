@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { RichText } from "@/components/ui/RichText";
+import { RichText, plainText } from "@/components/ui/RichText";
 import { SCENES } from "@/content/site";
 import { useFarolLit } from "@/lib/useFarolLit";
 import { prefersReducedMotion } from "@/lib/motion";
@@ -114,6 +114,7 @@ export function SceneHero() {
           <p className="eyebrow">{SCENES.heroOn.eyebrow}</p>
           <h2
             data-hero-headline
+            aria-label={plainText(SCENES.heroOn.headline)}
             className="hero-headline max-w-4xl font-display text-display-xl-mobile font-light text-papel-300 lg:text-display-xl"
           >
             <RichText text={SCENES.heroOn.headline} reveal="fog" />

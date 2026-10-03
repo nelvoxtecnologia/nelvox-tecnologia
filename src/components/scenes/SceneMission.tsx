@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { RichText } from "@/components/ui/RichText";
+import { RichText, plainText } from "@/components/ui/RichText";
 import { SCENES } from "@/content/site";
 
 /**
@@ -80,6 +80,7 @@ export function SceneMission() {
           <p className="eyebrow">{SCENES.missao.eyebrow}</p>
           <h2
             ref={textRef}
+            aria-label={plainText(SCENES.missao.text)}
             className="max-w-4xl font-display text-mission-mobile font-light text-papel-300 lg:text-mission"
           >
             <RichText text={SCENES.missao.text} reveal="mission" />
