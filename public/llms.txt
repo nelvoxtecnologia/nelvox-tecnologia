@@ -1,0 +1,24 @@
+# Nelvox
+
+> Software house em Porto Seguro, BA (Brasil). Criamos sites e presença digital (site, Google Meu Negócio e Instagram) para negócios de saúde, turismo e negócios locais que já existem, mas não são encontrados na internet.
+
+## Páginas
+
+- [Início](https://nelvox.com.br): o que fazemos e para quem
+- [Planos](https://nelvox.com.br/planos): planos, valores e o que cada um inclui
+- [Quem somos](https://nelvox.com.br/quem-somos): quem está por trás da Nelvox
+- [Política de privacidade](https://nelvox.com.br/politica-de-privacidade)
+- [Termos de uso](https://nelvox.com.br/termos-de-uso)
+
+## O que não oferecemos hoje
+
+- Sistemas de agendamento ou reservas que armazenem dados de pacientes ou hóspedes
+- Aplicativos com login de cliente
+- Integrações de terceiros sob demanda
+
+## Contato
+
+- WhatsApp: +55 73 99831-3910
+- E-mail: contato@nelvox.com.br
+- Horário: segunda a sexta, das 8h às 18h
+- CNPJ: 66.105.997/0001-52

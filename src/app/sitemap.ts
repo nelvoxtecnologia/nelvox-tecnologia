@@ -1,5 +1,11 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL, NAV_ORIGEM_HREF, NAV_PRIVACIDADE_HREF, NAV_PLANOS_HREF } from "@/content/site";
+import {
+  SITE_URL,
+  NAV_ORIGEM_HREF,
+  NAV_PRIVACIDADE_HREF,
+  NAV_PLANOS_HREF,
+  NAV_TERMOS_HREF,
+} from "@/content/site";
 
 /* ===== SITEMAP =====
    lastModified é a data real da última alteração de conteúdo de cada página
@@ -8,7 +14,7 @@ import { SITE_URL, NAV_ORIGEM_HREF, NAV_PRIVACIDADE_HREF, NAV_PLANOS_HREF } from
    data manualmente quando o conteúdo da página realmente mudar. */
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
-    { url: SITE_URL, lastModified: "2026-09-25", changeFrequency: "monthly", priority: 1 },
+    { url: SITE_URL, lastModified: "2026-10-03", changeFrequency: "monthly", priority: 1 },
     {
       url: `${SITE_URL}${NAV_ORIGEM_HREF}`,
       lastModified: "2026-09-28",
@@ -26,6 +32,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: "2026-09-28",
       changeFrequency: "monthly",
       priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}${NAV_TERMOS_HREF}`,
+      lastModified: "2026-10-03",
+      changeFrequency: "yearly",
+      priority: 0.3,
     },
   ];
 }
