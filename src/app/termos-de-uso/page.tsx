@@ -7,25 +7,13 @@ import { Footer } from "@/components/layout/Footer";
 import { TermsContent } from "@/components/legal/TermsContent";
 import { BackLink } from "@/components/ui/BackLink";
 import { loadTerms } from "@/lib/legal/terms";
-import { META, NAV_TERMOS_HREF, NAV_TERMOS_LABEL, SITE_URL } from "@/content/site";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { PAGE_META, NAV_TERMOS_HREF } from "@/content/site";
 
-const DESCRIPTION =
-  "Condições de uso do site da Nelvox: uso adequado, propriedade intelectual, responsabilidade, " +
-  "cookies, dados pessoais e foro.";
-
-export const metadata: Metadata = {
-  title: `${NAV_TERMOS_LABEL} — ${META.siteName}`,
-  description: DESCRIPTION,
-  alternates: { canonical: NAV_TERMOS_HREF },
-  robots: { index: true, follow: true },
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    url: `${SITE_URL}${NAV_TERMOS_HREF}`,
-    title: `${NAV_TERMOS_LABEL} — ${META.siteName}`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata({
+  ...PAGE_META.termos,
+  path: NAV_TERMOS_HREF,
+});
 
 export default function TermosDeUsoPage() {
   const terms = loadTerms();

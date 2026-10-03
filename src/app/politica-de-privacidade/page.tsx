@@ -6,7 +6,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PrivacyContent } from "@/components/privacy/PrivacyContent";
 import { BackLink } from "@/components/ui/BackLink";
-import { PRIVACY, PRIVACY_HAS_PLACEHOLDER, META, SITE_URL, NAV_PRIVACIDADE_HREF } from "@/content/site";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { PRIVACY, PRIVACY_HAS_PLACEHOLDER, META, NAV_PRIVACIDADE_HREF } from "@/content/site";
 
 if (PRIVACY_HAS_PLACEHOLDER) {
   console.warn(
@@ -15,19 +16,11 @@ if (PRIVACY_HAS_PLACEHOLDER) {
   );
 }
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: `${PRIVACY.metaTitle} — ${META.siteName}`,
   description: PRIVACY.metaDescription,
-  alternates: { canonical: NAV_PRIVACIDADE_HREF },
-  robots: { index: true, follow: true },
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    url: `${SITE_URL}${NAV_PRIVACIDADE_HREF}`,
-    title: `${PRIVACY.metaTitle} — ${META.siteName}`,
-    description: PRIVACY.metaDescription,
-  },
-};
+  path: NAV_PRIVACIDADE_HREF,
+});
 
 export default function PrivacidadePage() {
   return (

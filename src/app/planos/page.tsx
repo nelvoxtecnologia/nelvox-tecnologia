@@ -6,20 +6,13 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PlansContent } from "@/components/plans/PlansContent";
 import { BackLink } from "@/components/ui/BackLink";
-import { PLANS_INTRO, META, SITE_URL, NAV_PLANOS_HREF } from "@/content/site";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { PAGE_META, NAV_PLANOS_HREF } from "@/content/site";
 
-export const metadata: Metadata = {
-  title: `${PLANS_INTRO.eyebrow} — ${META.siteName}`,
-  description: PLANS_INTRO.intro,
-  alternates: { canonical: NAV_PLANOS_HREF },
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    url: `${SITE_URL}${NAV_PLANOS_HREF}`,
-    title: `${PLANS_INTRO.eyebrow} — ${META.siteName}`,
-    description: PLANS_INTRO.intro,
-  },
-};
+export const metadata: Metadata = pageMetadata({
+  ...PAGE_META.planos,
+  path: NAV_PLANOS_HREF,
+});
 
 export default function PlanosPage() {
   return (

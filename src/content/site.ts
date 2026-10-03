@@ -611,6 +611,28 @@ function hasBracketPlaceholder(value: unknown): boolean {
 export const PRIVACY_HAS_PLACEHOLDER = hasBracketPlaceholder(PRIVACY);
 
 /* ===== METADADOS ===== */
+/** Título e descrição (até 155 caracteres) de cada rota interna. Só fatos oficiais, sem promessa de resultado. */
+export const PAGE_META = {
+  quemSomos: {
+    title: `${NAV_ORIGEM_LABEL} — Nelvox`,
+    description:
+      "Por que a Nelvox, software house de Porto Seguro, BA, trata presença digital como um farol, " +
+      "e como a empresa nasceu. Com método, não por sorte.",
+  },
+  planos: {
+    title: "Planos — Nelvox",
+    description:
+      "Planos de presença digital da Nelvox, de Porto Seguro, BA: do site institucional à gestão de " +
+      "Google Meu Negócio e Instagram. Veja o que cada um inclui.",
+  },
+  termos: {
+    title: `${NAV_TERMOS_LABEL} — Nelvox`,
+    description:
+      "Condições de uso do site da Nelvox: uso adequado, propriedade intelectual, responsabilidade, " +
+      "cookies, dados pessoais e foro.",
+  },
+} as const;
+
 export const META = {
   title: "Nelvox — Criação de sites e presença digital em Porto Seguro, BA",
   description:

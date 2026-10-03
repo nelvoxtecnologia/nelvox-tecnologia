@@ -6,20 +6,13 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { RichText } from "@/components/ui/RichText";
 import { BackLink } from "@/components/ui/BackLink";
-import { ORIGEM, META, SITE_URL, NAV_ORIGEM_HREF, NAV_ORIGEM_LABEL } from "@/content/site";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { ORIGEM, PAGE_META, NAV_ORIGEM_HREF } from "@/content/site";
 
-export const metadata: Metadata = {
-  title: `${NAV_ORIGEM_LABEL} — ${META.siteName}`,
-  description: ORIGEM.headline,
-  alternates: { canonical: NAV_ORIGEM_HREF },
-  openGraph: {
-    type: "website",
-    locale: "pt_BR",
-    url: `${SITE_URL}${NAV_ORIGEM_HREF}`,
-    title: `${NAV_ORIGEM_LABEL} — ${META.siteName}`,
-    description: ORIGEM.headline,
-  },
-};
+export const metadata: Metadata = pageMetadata({
+  ...PAGE_META.quemSomos,
+  path: NAV_ORIGEM_HREF,
+});
 
 export default function OrigemPage() {
   return (
