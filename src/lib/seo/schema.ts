@@ -21,8 +21,11 @@ import {
    `prune` remove "", null, undefined e objetos/listas que ficariam vazios.
 
    Deliberadamente ausentes: aggregateRating, review e priceRange (não há avaliações reais a
-   declarar e schema inventado é penalizado), e `logo` (nenhum PNG de marca em public/ tem
-   fundo transparente com contraste sobre branco — ver docs/seo/relatorio_correcoes_seo.md). */
+   declarar e schema inventado é penalizado).
+
+   `logo`: símbolo com fundo transparente (public/brand/simbolo_nelvox.png, gerado do SVG). Atenção:
+   o símbolo é bege claro e o Google exibe logos sobre branco, então ele aparece pálido. Se isso
+   incomodar, trocar por um PNG com fundo escuro, como simbolo_nelvox_gold_navy.png. */
 
 type Json = string | number | boolean | null | undefined | Json[] | { [key: string]: Json };
 
@@ -54,6 +57,7 @@ export const schema = prune({
       name: "Nelvox",
       legalName: LEGAL_NAME,
       url: SITE_URL,
+      logo: `${SITE_URL}/brand/simbolo_nelvox.png`,
       image: `${SITE_URL}/opengraph-image.png`,
       description: SITE_DESCRIPTION,
       slogan: SLOGAN,

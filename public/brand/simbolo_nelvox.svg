@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Vetor" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 3000 3000">
+  <defs>
+    <linearGradient id="Gradiente_sem_nome_1248" data-name="Gradiente sem nome 1248" x1="756.56" y1="1456.19" x2="1200.56" y2="2335.27" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f3eee7"/>
+      <stop offset=".34" stop-color="#d9d4cc"/>
+      <stop offset=".78" stop-color="#d7d2ca"/>
+      <stop offset=".94" stop-color="#d2ccc3"/>
+      <stop offset="1" stop-color="#cfc8be"/>
+    </linearGradient>
+    <linearGradient id="Gradiente_sem_nome_677" data-name="Gradiente sem nome 677" x1="2223.25" y1="2178.81" x2="2099.64" y2="411.02" gradientTransform="translate(-50.31 8.5) rotate(-2.15)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f3eee7"/>
+      <stop offset=".3" stop-color="#d9d4cc"/>
+      <stop offset=".8" stop-color="#e7e2da"/>
+      <stop offset="1" stop-color="#cfc8be"/>
+    </linearGradient>
+    <linearGradient id="Gradiente_sem_nome_1252" data-name="Gradiente sem nome 1252" x1="1425.93" y1="2055.79" x2="1722.4" y2="1865.2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f3eee7"/>
+      <stop offset=".03" stop-color="#f2ece5"/>
+      <stop offset="1" stop-color="#cfc8be"/>
+    </linearGradient>
+    <linearGradient id="Gradiente_sem_nome_677-2" data-name="Gradiente sem nome 677" x1="400" y1="1099.77" x2="1955.13" y2="1099.77" gradientTransform="matrix(1,0,0,1,0,0)" xlink:href="#Gradiente_sem_nome_677"/>
+  </defs>
+  <path id="Shape-Left" d="M907.85,898.13c90.13,54.39,217.18,175.86,277.41,265.6-83.04,175.02-203.71,377.62-265.75,555.77-99.07,285.39-53.31,681.59,120.91,914.53,2.69,3.93-1.52,8.87-5.85,6.9-262.89-109.59-522.29-400.75-581.54-720.22-63.23-352.03,105.24-819.54,454.83-1022.58Z" fill="url(#Gradiente_sem_nome_1248)"/>
+  <path id="Shape-Right" d="M2117.77,2132.26c-87.19-65.74-223.16-213.92-288.35-303.6,236.24-476.38,485.64-954.01,148.13-1456.73-2.64-3.95,1.61-8.85,5.93-6.84,250.82,106.95,536.71,409.35,555.08,734.16,16.95,239.57-2.33,474.69-199.25,755.53-32.98,47.04-220.06,278.56-221.54,277.48Z" fill="url(#Gradiente_sem_nome_677)"/>
+  <path id="Shape-Center" d="M1217.07,1193.53c263.31,314.03,526.62,628.06,789.92,942.09,162.6,200.15,424.04,156.09,593,51.46-148.88,225.88-546.59,627.45-897.34,179.02-107.41-128.29-544.52-665.35-655.66-805.58,56.69-122.33,113.38-244.66,170.07-366.99Z" fill="url(#Gradiente_sem_nome_1252)"/>
+  <path id="Shape-Top" d="M1786.32,1786.17c-264.38-313.13-528.76-626.26-793.14-939.39-163.29-199.59-424.57-154.63-593.18-49.43,148.11-226.39,544.44-629.31,896.72-182.09,107.85,127.92,546.79,663.48,658.41,803.33-56.27,122.52-112.54,245.05-168.81,367.57Z" fill="url(#Gradiente_sem_nome_677-2)"/>
+</svg>
