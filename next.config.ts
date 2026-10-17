@@ -58,6 +58,13 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Não anuncia "X-Powered-By: Next.js" (menos informação para quem faz varredura).
   poweredByHeader: false,
+  /* Desempenho no celular: o CSS (~10 KiB, Tailwind) vai dentro do HTML em vez de um <link> que
+     bloqueia a primeira pintura e custa uma ida e volta à rede. Mais indicado para visitantes novos
+     (o caso da maioria vindo do Google); como o HTML já é servido do cache da CDN, o custo de
+     reenviar o CSS junto é pequeno. Nenhuma mudança visual. Ver docs/seo/desempenho_mobile.md. */
+  experimental: {
+    inlineCss: true,
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

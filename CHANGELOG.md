@@ -96,3 +96,14 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   **Responsável**: Claude Code (a partir da auditoria e das confirmações do Douglas; o texto ainda
   precisa de validação jurídica). **Impacto LGPD**: sim — a política passa a informar um tratamento
   que já ocorria (art. 9º da LGPD); nenhuma coleta nova e nenhum script novo.
+
+## 2026-10-04
+- **Alteração**: JSON-LD da empresa (`src/lib/seo/schema.ts`, `src/content/site.ts`): descrição passa a
+  "Infraestrutura de presença digital para negócios de Porto Seguro/BA: site, Google Meu Negócio e
+  Instagram." e `areaServed` a "Porto Seguro, BA, Brasil"; o bloco único (`ProfessionalService`, `@id`
+  `/#empresa`) foi ajustado em vez de criar um segundo `Organization` na home. Sem campos de avaliação,
+  preço ou endereço de rua. `next.config.ts`: só `experimental.inlineCss` (desempenho no celular); a CSP e
+  os demais cabeçalhos **não foram alterados** e não há violação de CSP no navegador (verificado em 4
+  páginas); `Tracking.tsx`, `ConsentBanner.tsx` e o Consent Mode inalterados.
+  **Responsável**: Claude Code. **Impacto LGPD**: nenhum — dados institucionais já públicos no rodapé e
+  na política; nenhuma coleta nova, nenhum script novo.
