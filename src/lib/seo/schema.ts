@@ -72,10 +72,7 @@ export const schema = prune({
         addressRegion: STATE,
         addressCountry: "BR",
       },
-      areaServed: [
-        { "@type": "City", name: CITY },
-        { "@type": "Country", name: "Brasil" },
-      ],
+      areaServed: `${CITY}, ${STATE}, Brasil`,
       openingHoursSpecification: [
         {
           "@type": "OpeningHoursSpecification",

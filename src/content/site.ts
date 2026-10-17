@@ -43,8 +43,7 @@ export const PRIVACY_EMAIL = EMAIL;
 export const FOUNDER_NAME = "Douglas Barbosa Alves";
 export const SLOGAN = "Presença com intenção.";
 export const SITE_DESCRIPTION =
-  "Software house em Porto Seguro, BA. Cria sites e presença digital (site, Google Meu Negócio e " +
-  "Instagram) para negócios de saúde, turismo e negócios locais.";
+  "Infraestrutura de presença digital para negócios de Porto Seguro/BA: site, Google Meu Negócio e Instagram.";
 export const PHONE_E164 = "+55-73-99831-3910";
 export const PHONE_DISPLAY = "(73) 99831-3910";
 export const OPENING_HOURS_LABEL = "Seg a sex, 8h às 18h";
