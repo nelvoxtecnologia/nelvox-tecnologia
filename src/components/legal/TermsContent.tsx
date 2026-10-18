@@ -20,7 +20,7 @@ function Linkified({ text }: { text: string }) {
     <>
       {text.split(LINKABLE).map((part, i) => {
         if (i % 2 === 0) return <Fragment key={i}>{part}</Fragment>;
-        const href = part.startsWith("http") ? part : `mailto:${part}`;
+        const href = /^https?:\/\//.test(part) ? part : `mailto:${part}`;
         return (
           <a key={i} href={href} className={link}>
             {part}

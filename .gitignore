@@ -43,3 +43,7 @@ next-env.d.ts
 
 # pacotes de design baixados (referência local, não fazem parte do site)
 *.zip
+
+# chaves e credenciais (nunca devem ser versionadas)
+*.key
+credentials.json
