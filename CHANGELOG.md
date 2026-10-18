@@ -107,3 +107,28 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   páginas); `Tracking.tsx`, `ConsentBanner.tsx` e o Consent Mode inalterados.
   **Responsável**: Claude Code. **Impacto LGPD**: nenhum — dados institucionais já públicos no rodapé e
   na política; nenhuma coleta nova, nenhum script novo.
+
+## 2026-10-18
+- **Alteração**: consentimento (`src/lib/consent.ts`, `Tracking.tsx`, `ConsentBanner.tsx`,
+  `ConsentPreferences.tsx`). (1) Revogar ou aceitar em uma aba agora vale nas outras abertas (evento
+  `storage`); antes uma aba antiga seguia com o consentimento velho. (2) O evento interno de consentimento
+  só é aplicado se o formato for válido (`isConsentState`). (3) Marketing aceito também envia
+  `fbq("consent","grant")`, igual ao `revoke` que já existia. (4) A revogação apaga cookies `_ga*`/`_fbp`/`_fbc`
+  gravados com atributo `Domain` (antes só apagava os de caminho simples e os de domínio permaneciam).
+  (5) O banner fecha ao salvar por qualquer caminho (inclusive o link "Preferências" do próprio banner) e
+  não reaparece se já houver escolha. (6) "Recusar" no banner passou a ter o mesmo peso visual do "Aceitar"
+  (botões com a mesma proeminência). (7) O título do diálogo de preferências deixou de ser `h2` (não vira
+  título da página). Mapeamento das categorias, Consent Mode v2 (padrão `denied`) e IDs inalterados.
+  **Responsável**: Claude Code. **Impacto LGPD**: positivo — revogação passa a ter efeito real em todas as
+  abas e nos cookies de domínio; nenhum script novo e nenhuma coleta nova. Validado (Regra 6, IDs falsos,
+  requisições a Google/Meta abortadas): Recusar → 0 requisições; Aceitar → GA4/Meta disparam.
+- **Alteração**: rodapé e páginas institucionais (`src/content/site.ts`, `Footer`, Termos de uso): horário
+  oficial seg a sex 8h às 18h e sáb 9h às 12h, link da ficha no Google Maps
+  (`https://maps.app.goo.gl/JSwQ3TjLnfVzfHc48`), data dos Termos 18/10/2026. Política de privacidade:
+  descrição e metadados revisados. Schema (`OpeningHoursSpecification`, `serviceType`, ofertas em /planos)
+  e `llms.txt` com os mesmos dados. **Responsável**: Claude Code (dados do Douglas).
+  **Impacto LGPD**: nenhum — dados institucionais da empresa, nenhum dado pessoal novo.
+- **Alteração**: `next.config.ts` passa a falhar fechado em produção se faltar configuração de segurança e
+  ganha redirect 301 de `www.nelvox.com.br` para o domínio sem `www`. **Responsável**: Claude Code.
+  **Impacto LGPD**: nenhum direto — evita duplicidade de origem para o consentimento (que fica no
+  `localStorage` por origem).
