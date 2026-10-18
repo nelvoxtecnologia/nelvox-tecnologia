@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { readConsent, saveConsent, openConsentPreferences } from "@/lib/consent";
+import {
+  CONSENT_CHANGED_EVENT,
+  CONSENT_STORAGE_KEY,
+  readConsent,
+  saveConsent,
+  openConsentPreferences,
+} from "@/lib/consent";
 import { FAROL_LIT_EVENT, isFarolLit } from "@/lib/farolEvents";
 import { PRELOADER_DONE_EVENT } from "@/components/preloader/preloaderEvents";
 import { FOOTER_LINKS } from "@/content/site";
@@ -26,7 +32,9 @@ export function ConsentBanner() {
 
     let timer = 0;
     const show = () => {
-      timer = window.setTimeout(() => setVisible(true), SHOW_DELAY_MS);
+      timer = window.setTimeout(() => {
+        if (readConsent() === null) setVisible(true);
+      }, SHOW_DELAY_MS);
     };
 
     const hasFarol = document.querySelector("[data-farol-wrapper]") !== null;
@@ -52,6 +60,21 @@ export function ConsentBanner() {
     }
 
     return () => window.clearTimeout(timer);
+  }, []);
+
+  /* A escolha também pode ser salva pelo diálogo de Preferências ou por outra aba: o banner
+     não tem mais nada a perguntar. */
+  useEffect(() => {
+    const hide = () => setVisible(false);
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === CONSENT_STORAGE_KEY) hide();
+    };
+    window.addEventListener(CONSENT_CHANGED_EVENT, hide);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(CONSENT_CHANGED_EVENT, hide);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   useEffect(() => {
@@ -102,7 +125,7 @@ export function ConsentBanner() {
           type="button"
           onClick={decline}
           data-hot
-          className="flex-1 rounded-sm border border-navy-700 px-4 py-[8px] font-body text-[13px] font-semibold text-papel-300 transition-colors duration-ui ease-brand-in-out hover:border-papel-500"
+          className="flex-1 rounded-sm bg-papel-300 px-4 py-[8px] font-body text-[13px] font-semibold text-navy-950 transition-colors duration-ui ease-brand-in-out hover:bg-papel-500"
         >
           Recusar
         </button>
