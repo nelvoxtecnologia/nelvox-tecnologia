@@ -6,6 +6,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { RichText } from "@/components/ui/RichText";
 import { BackLink } from "@/components/ui/BackLink";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageSchema } from "@/lib/seo/schema";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { ORIGEM, PAGE_META, NAV_ORIGEM_HREF } from "@/content/site";
 
@@ -17,6 +19,14 @@ export const metadata: Metadata = pageMetadata({
 export default function OrigemPage() {
   return (
     <>
+      <JsonLd
+        data={pageSchema({
+          path: NAV_ORIGEM_HREF,
+          name: PAGE_META.quemSomos.title,
+          description: PAGE_META.quemSomos.description,
+          type: "AboutPage",
+        })}
+      />
       <Preloader />
       <CursorHalo />
       <Farol initialDocked />

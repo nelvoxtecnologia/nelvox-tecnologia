@@ -90,8 +90,9 @@ export function SceneHero() {
           mesma proporção do farol (ver DESKTOP_REFERENCE_HEIGHT em Farol.tsx);
           margens de 24px no celular.
 
-          O bloco está sempre no HTML servido (o h1 da página é a headline "Todo porto
-          precisa de uma luz."), mas fica `invisible` até o farol acender: antes do clique a
+          O bloco está sempre no HTML servido (a headline "Todo porto precisa de uma luz." é
+          um h2; o h1 da página é o título da Cena 2, visível sem clique, ver SceneSea.tsx),
+          mas fica `invisible` até o farol acender: antes do clique a
           tela só tem o farol e o hint, e `invisible` também o tira do foco e do leitor de tela.
           É o texto de verdade da Cena 1, só revelado pela interação — nenhum texto extra. */}
       <div
@@ -101,13 +102,13 @@ export function SceneHero() {
         }`}
       >
         <p className="eyebrow">{SCENES.heroOn.eyebrow}</p>
-        <h1
+        <h2
           data-hero-headline
           aria-label={plainText(SCENES.heroOn.headline)}
           className="hero-headline max-w-4xl font-display text-display-xl-mobile font-light text-papel-300 lg:text-display-xl"
         >
           <RichText text={SCENES.heroOn.headline} reveal="fog" />
-        </h1>
+        </h2>
         <p className="font-body text-body text-papel-500 lg:max-w-[31em]">{SCENES.heroOn.body}</p>
       </div>
 

@@ -60,4 +60,4 @@ Dúvidas sobre estes Termos:
 
 - E-mail: contato@nelvox.com.br
 - WhatsApp: (73) 99831-3910
-- Horário de atendimento: segunda a sexta, das 8h às 18h
+- Horário de atendimento: segunda a sexta, das 8h às 18h; sábado, das 9h às 12h

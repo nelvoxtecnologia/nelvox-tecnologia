@@ -6,8 +6,10 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PrivacyContent } from "@/components/privacy/PrivacyContent";
 import { BackLink } from "@/components/ui/BackLink";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageSchema } from "@/lib/seo/schema";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { PRIVACY, PRIVACY_HAS_PLACEHOLDER, META, NAV_PRIVACIDADE_HREF } from "@/content/site";
+import { PRIVACY, PRIVACY_HAS_PLACEHOLDER, NAV_PRIVACIDADE_HREF } from "@/content/site";
 
 if (PRIVACY_HAS_PLACEHOLDER) {
   console.warn(
@@ -17,7 +19,7 @@ if (PRIVACY_HAS_PLACEHOLDER) {
 }
 
 export const metadata: Metadata = pageMetadata({
-  title: `${PRIVACY.metaTitle} — ${META.siteName}`,
+  title: PRIVACY.metaTitle,
   description: PRIVACY.metaDescription,
   path: NAV_PRIVACIDADE_HREF,
 });
@@ -25,6 +27,13 @@ export const metadata: Metadata = pageMetadata({
 export default function PrivacidadePage() {
   return (
     <>
+      <JsonLd
+        data={pageSchema({
+          path: NAV_PRIVACIDADE_HREF,
+          name: PRIVACY.metaTitle,
+          description: PRIVACY.metaDescription,
+        })}
+      />
       <Preloader />
       <CursorHalo />
       <Farol initialDocked />

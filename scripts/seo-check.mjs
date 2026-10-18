@@ -6,7 +6,7 @@
      npm run seo:check -- https://nelvox.com.br → outro endereço
 
    Node puro, sem dependência. Descobre as rotas pelo sitemap.xml e confere em cada uma
-   (itens 1–7 bloqueiam: saída com código 1; o 8 é só aviso):
+   (itens 1–7 e 9 bloqueiam: saída com código 1; o 8 é só aviso):
 
      1. exatamente um <h1
      2. JSON-LD na home, válido em JSON.parse, sem valor vazio nem "<" dentro de strings
@@ -15,6 +15,7 @@
      5. canonical, title e description presentes e diferentes entre as rotas
      6. /llms.txt, /robots.txt e /sitemap.xml com status 200
      7. nenhum TODO, undefined, [completar, {{ }} ou <...> no texto visível
+     9. todo preço, horário, telefone e e-mail do JSON-LD existe no texto visível da página
      8. (aviso) vocabulário proibido (regra 5 do briefing) e termos obsoletos, com rota e trecho
    =================================================================== */
 
@@ -133,6 +134,29 @@ async function main() {
         const problems = [];
         emptyOrBroken(JSON.parse(block[1]), "$", problems);
         problems.forEach((p) => fail(2, route, p));
+
+        // 9. todo preço, horário, telefone e e-mail do JSON-LD existe no texto visível da página
+        const vtext = visibleText(html);
+        const vdigits = vtext.replace(/\D/g, "");
+        (function walk(n) {
+          if (Array.isArray(n)) return n.forEach(walk);
+          if (!n || typeof n !== "object") return;
+          if (n["@type"] === "UnitPriceSpecification" && typeof n.price === "number") {
+            const shown = `R$${n.price.toLocaleString("pt-BR")}`;
+            if (!vtext.includes(shown)) fail(9, route, `preço do JSON-LD ausente no texto visível: ${shown}`);
+          }
+          if (n["@type"] === "OpeningHoursSpecification") {
+            for (const t of [n.opens, n.closes]) {
+              const h = parseInt(String(t).slice(0, 2), 10);
+              if (!new RegExp(`(^|[^0-9])${h}h`).test(vtext)) fail(9, route, `horário do JSON-LD ausente no texto visível: ${t} (esperado "${h}h")`);
+            }
+          }
+          if (typeof n.telephone === "string" && !vdigits.includes(n.telephone.replace(/\D/g, "").replace(/^55/, ""))) {
+            fail(9, route, `telefone do JSON-LD ausente no texto visível: ${n.telephone}`);
+          }
+          if (typeof n.email === "string" && !vtext.includes(n.email)) fail(9, route, `e-mail do JSON-LD ausente no texto visível: ${n.email}`);
+          Object.values(n).forEach(walk);
+        })(JSON.parse(block[1]));
       } catch (err) {
         fail(2, route, `JSON-LD inválido em JSON.parse: ${err.message}`);
       }
@@ -207,7 +231,7 @@ function report() {
     console.log("\nseo:check REPROVADO");
     process.exit(1);
   }
-  console.log("seo:check APROVADO (itens 1 a 7)");
+  console.log("seo:check APROVADO (itens 1 a 7 e 9)");
 }
 
 main().catch((err) => {
