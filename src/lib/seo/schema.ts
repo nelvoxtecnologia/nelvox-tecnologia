@@ -7,25 +7,30 @@ import {
   LEGAL_CNPJ,
   LEGAL_NAME,
   LINKEDIN_URL,
+  OPENING_HOURS,
   PHONE_E164,
   POSTAL_CODE,
+  SERVICE_TYPES,
   SITE_DESCRIPTION,
   SITE_URL,
   SLOGAN,
   STATE,
   STREET_ADDRESS,
 } from "@/content/site";
+import { PLANS, PRICES_VALID_UNTIL } from "@/content/plans";
 
 /* ===== DADOS ESTRUTURADOS (schema.org) =====
-   Montado só a partir de src/content/site.ts (fatos oficiais). Campo vazio = a chave some:
-   `prune` remove "", null, undefined e objetos/listas que ficariam vazios.
+   Montado só a partir de src/content/site.ts e src/content/plans.ts (fatos oficiais). Campo vazio =
+   a chave some: `prune` remove "", null, undefined e objetos/listas que ficariam vazios. Nenhum
+   preço, horário ou telefone é digitado aqui: tudo vem das constantes, e `npm run seo:check`
+   confere que cada um também aparece no texto visível da página.
 
    Deliberadamente ausentes: aggregateRating, review e priceRange (não há avaliações reais a
    declarar e schema inventado é penalizado).
 
-   `logo`: símbolo com fundo transparente (public/brand/simbolo_nelvox.png, gerado do SVG). Atenção:
-   o símbolo é bege claro e o Google exibe logos sobre branco, então ele aparece pálido. Se isso
-   incomodar, trocar por um PNG com fundo escuro, como simbolo_nelvox_gold_navy.png. */
+   `logo`: símbolo dourado sobre fundo azul-marinho (public/brand/simbolo_nelvox_gold_navy.png). O
+   fundo escuro garante contraste: o Google exibe logos sobre branco e o símbolo transparente, em
+   bege claro, ficaria pálido (public/brand/simbolo_nelvox.png/.svg seguem na pasta para outros usos). */
 
 type Json = string | number | boolean | null | undefined | Json[] | { [key: string]: Json };
 
@@ -57,10 +62,11 @@ export const schema = prune({
       name: "Nelvox",
       legalName: LEGAL_NAME,
       url: SITE_URL,
-      logo: `${SITE_URL}/brand/simbolo_nelvox.png`,
+      logo: `${SITE_URL}/brand/simbolo_nelvox_gold_navy.png`,
       image: `${SITE_URL}/opengraph-image.png`,
       description: SITE_DESCRIPTION,
       slogan: SLOGAN,
+      serviceType: [...SERVICE_TYPES],
       taxID: LEGAL_CNPJ,
       email: EMAIL,
       telephone: PHONE_E164,
@@ -72,18 +78,13 @@ export const schema = prune({
         addressRegion: STATE,
         addressCountry: "BR",
       },
-      areaServed: [
-        { "@type": "City", name: CITY },
-        { "@type": "Country", name: "Brasil" },
-      ],
-      openingHoursSpecification: [
-        {
-          "@type": "OpeningHoursSpecification",
-          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-          opens: "08:00",
-          closes: "18:00",
-        },
-      ],
+      areaServed: `${CITY}, ${STATE}, Brasil`,
+      openingHoursSpecification: OPENING_HOURS.map((h) => ({
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [...h.days],
+        opens: h.opens,
+        closes: h.closes,
+      })),
       founder: { "@type": "Person", name: FOUNDER_NAME },
       sameAs: [INSTAGRAM_URL, GMB_URL, LINKEDIN_URL],
     },
@@ -97,3 +98,75 @@ export const schema = prune({
     },
   ],
 });
+
+/**
+ * Esquema por página: a própria página (WebPage, ou AboutPage em /quem-somos) e o BreadcrumbList.
+ * Só em /planos entra também o catálogo de ofertas, gerado de src/content/plans.ts, no mesmo
+ * `@id` da empresa (o Google junta os dois nós). Home e demais páginas não declaram preço.
+ */
+export function pageSchema({
+  path,
+  name,
+  description,
+  type = "WebPage",
+  withOffers = false,
+}: {
+  path: string;
+  name: string;
+  description: string;
+  type?: "WebPage" | "AboutPage";
+  withOffers?: boolean;
+}) {
+  const url = `${SITE_URL}${path}`;
+  return prune({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": type,
+        "@id": `${url}#pagina`,
+        url,
+        name,
+        description,
+        inLanguage: "pt-BR",
+        isPartOf: { "@id": SITE_ID },
+        about: { "@id": EMPRESA_ID },
+        breadcrumb: { "@id": `${url}#trilha` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#trilha`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Início", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name, item: url },
+        ],
+      },
+      withOffers
+        ? {
+            "@type": "ProfessionalService",
+            "@id": EMPRESA_ID,
+            hasOfferCatalog: {
+              "@type": "OfferCatalog",
+              name: "Planos Nelvox",
+              itemListElement: PLANS.map((plan) => ({
+                "@type": "Offer",
+                "@id": `${url}#${plan.id}`,
+                name: plan.name,
+                url,
+                priceCurrency: "BRL",
+                priceValidUntil: PRICES_VALID_UNTIL,
+                itemOffered: {
+                  "@type": "Service",
+                  name: plan.name,
+                  description: plan.includes.join("; "),
+                },
+                priceSpecification: [
+                  { "@type": "UnitPriceSpecification", name: "Setup (pagamento único)", price: plan.setupBRL, priceCurrency: "BRL" },
+                  { "@type": "UnitPriceSpecification", name: "Mensalidade", price: plan.monthlyBRL, priceCurrency: "BRL", unitCode: "MON" },
+                ],
+              })),
+            },
+          }
+        : undefined,
+    ],
+  });
+}

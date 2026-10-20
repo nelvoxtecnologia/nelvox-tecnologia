@@ -52,16 +52,18 @@ export function ConsentPreferences() {
   return (
     <dialog
       ref={dialogRef}
-      aria-label="Preferências de cookies"
+      aria-labelledby="cookie-prefs-titulo"
       className="m-auto w-[calc(100%-32px)] max-w-[420px] rounded-md border border-navy-700 bg-navy-800 p-6 text-papel-300 backdrop:bg-navy-950/70"
       onClose={() => dialogRef.current?.close()}
     >
       <div className="flex flex-col gap-6">
         <div>
           <p className="eyebrow">Privacidade</p>
-          <h2 className="mt-2 font-display text-h3 font-light text-papel-300">
+          {/* Não é heading de propósito: o diálogo existe em todas as páginas e um h2 aqui entraria no
+              HTML do servidor, bagunçando a hierarquia de títulos que o Google lê. */}
+          <p id="cookie-prefs-titulo" className="mt-2 font-display text-h3 font-light text-papel-300">
             Preferências de cookies
-          </h2>
+          </p>
         </div>
 
         <div className="flex flex-col gap-4">

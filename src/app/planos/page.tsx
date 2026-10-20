@@ -6,6 +6,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { PlansContent } from "@/components/plans/PlansContent";
 import { BackLink } from "@/components/ui/BackLink";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageSchema } from "@/lib/seo/schema";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { PAGE_META, NAV_PLANOS_HREF } from "@/content/site";
 
@@ -17,6 +19,14 @@ export const metadata: Metadata = pageMetadata({
 export default function PlanosPage() {
   return (
     <>
+      <JsonLd
+        data={pageSchema({
+          path: NAV_PLANOS_HREF,
+          name: PAGE_META.planos.title,
+          description: PAGE_META.planos.description,
+          withOffers: true,
+        })}
+      />
       <Preloader />
       <CursorHalo />
       <Farol initialDocked />

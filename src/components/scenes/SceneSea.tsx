@@ -172,9 +172,11 @@ export function SceneSea() {
               aria-hidden={phase !== "problema"}
             >
               <p className="eyebrow">{SCENES.problema.eyebrow}</p>
-              <h2 className="font-display text-display-l-mobile font-light text-papel-300 lg:max-w-xl lg:text-display-l">
+              {/* H1 da página (G1): o título do farol (Cena 1) só aparece depois do clique, e o Google
+                  não clica; este é visível ao rolar, sem interação. O aspecto é o mesmo de antes. */}
+              <h1 className="font-display text-display-l-mobile font-light text-papel-300 lg:max-w-xl lg:text-display-l">
                 <RichText text={SCENES.problema.headline} breaks="desktop" />
-              </h2>
+              </h1>
             </div>
             <div
               ref={solucaoHeadingRef}

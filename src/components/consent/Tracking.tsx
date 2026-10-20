@@ -6,9 +6,12 @@ import { usePathname } from "next/navigation";
 import {
   ANALYTICS_COOKIE_PREFIXES,
   CONSENT_CHANGED_EVENT,
+  CONSENT_STORAGE_KEY,
+  CONSENT_VERSION,
   MARKETING_COOKIE_PREFIXES,
   type ConsentState,
   clearTrackingCookies,
+  isConsentState,
   readConsent,
 } from "@/lib/consent";
 
@@ -55,29 +58,46 @@ export function Tracking() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const onChange = (event: Event) => {
-      const detail = (event as CustomEvent<ConsentState>).detail;
-      setConsent(detail);
+    const apply = (state: ConsentState) => {
+      setConsent(state);
 
       /* Mantém o Consent Mode em dia a cada escolha (aceitar, recusar, revogar). */
       if (typeof window.gtag === "function") {
         window.gtag("consent", "update", {
-          analytics_storage: grant(detail.analytics),
-          ad_storage: grant(detail.marketing),
-          ad_user_data: grant(detail.marketing),
-          ad_personalization: grant(detail.marketing),
+          analytics_storage: grant(state.analytics),
+          ad_storage: grant(state.marketing),
+          ad_user_data: grant(state.marketing),
+          ad_personalization: grant(state.marketing),
         });
       }
-      if (!detail.marketing && typeof window.fbq === "function") {
-        window.fbq("consent", "revoke");
+      if (typeof window.fbq === "function") {
+        window.fbq("consent", state.marketing ? "grant" : "revoke");
       }
       /* Cada categoria limpa só os próprios cookies, para revogar uma não apagar
          cookies de uma categoria ainda consentida. */
-      if (!detail.analytics) clearTrackingCookies(ANALYTICS_COOKIE_PREFIXES);
-      if (!detail.marketing) clearTrackingCookies(MARKETING_COOKIE_PREFIXES);
+      if (!state.analytics) clearTrackingCookies(ANALYTICS_COOKIE_PREFIXES);
+      if (!state.marketing) clearTrackingCookies(MARKETING_COOKIE_PREFIXES);
     };
+
+    /* Qualquer script da mesma origem pode disparar este evento: só aceita o formato exato. */
+    const onChange = (event: Event) => {
+      const detail = (event as CustomEvent<unknown>).detail;
+      if (isConsentState(detail)) apply(detail);
+    };
+
+    /* `storage` só dispara nas OUTRAS abas: sem isto, uma aba aberta antes da revogação
+       seguiria rastreando. Escolha apagada = sem consentimento. */
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== null && event.key !== CONSENT_STORAGE_KEY) return;
+      apply(readConsent() ?? { v: CONSENT_VERSION, analytics: false, marketing: false, ts: Date.now() });
+    };
+
     window.addEventListener(CONSENT_CHANGED_EVENT, onChange);
-    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, onChange);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(CONSENT_CHANGED_EVENT, onChange);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   /* Pageview a cada troca de rota (navegação client-side entre / e /quem-somos/politica-de-privacidade). */

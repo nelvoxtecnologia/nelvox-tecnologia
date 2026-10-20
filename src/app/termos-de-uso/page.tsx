@@ -7,6 +7,8 @@ import { Footer } from "@/components/layout/Footer";
 import { TermsContent } from "@/components/legal/TermsContent";
 import { BackLink } from "@/components/ui/BackLink";
 import { loadTerms } from "@/lib/legal/terms";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { pageSchema } from "@/lib/seo/schema";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { PAGE_META, NAV_TERMOS_HREF } from "@/content/site";
 
@@ -22,6 +24,13 @@ export default function TermosDeUsoPage() {
     <>
       {/* PENDENTE: validação jurídica antes do merge. O texto (docs/referencias/termos_de_uso_nelvox.md)
           ainda não passou por revisão jurídica. Este comentário não vai para a página. */}
+      <JsonLd
+        data={pageSchema({
+          path: NAV_TERMOS_HREF,
+          name: PAGE_META.termos.title,
+          description: PAGE_META.termos.description,
+        })}
+      />
       <Preloader />
       <CursorHalo />
       <Farol initialDocked />

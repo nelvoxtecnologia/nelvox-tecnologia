@@ -85,3 +85,50 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   **Responsável**: Claude Code (a partir do Playbook e da auditoria do Douglas; o texto ainda precisa
   de validação jurídica). **Impacto LGPD**: sim — a política passa a declarar tratamentos e
   operadores que já existiam na contratação; nenhuma coleta nova e nenhum script novo.
+
+- **Alteração**: política de privacidade passa a cobrir o contato comercial com empresas
+  (prospecção): novo card "Contatos comerciais de empresas" (dados públicos de contato; quem não
+  quiser ser contatado avisa e o pedido é registrado numa lista de supressão), base "legítimo
+  interesse" estendida a esse contato e novo prazo de retenção "Contatos comerciais sem resposta:
+  até 6 meses" (prazo da auditoria documental de 01/10/2026, confirmado pelo Douglas). Fornecedores
+  já listados (ZapSign, Asaas, Google) confirmados pelo Douglas. Banner e diálogo de preferências
+  não foram alterados; `CONSENT_VERSION` mantido (nenhuma categoria de cookie mudou).
+  **Responsável**: Claude Code (a partir da auditoria e das confirmações do Douglas; o texto ainda
+  precisa de validação jurídica). **Impacto LGPD**: sim — a política passa a informar um tratamento
+  que já ocorria (art. 9º da LGPD); nenhuma coleta nova e nenhum script novo.
+
+## 2026-10-04
+- **Alteração**: JSON-LD da empresa (`src/lib/seo/schema.ts`, `src/content/site.ts`): descrição passa a
+  "Infraestrutura de presença digital para negócios de Porto Seguro/BA: site, Google Meu Negócio e
+  Instagram." e `areaServed` a "Porto Seguro, BA, Brasil"; o bloco único (`ProfessionalService`, `@id`
+  `/#empresa`) foi ajustado em vez de criar um segundo `Organization` na home. Sem campos de avaliação,
+  preço ou endereço de rua. `next.config.ts`: só `experimental.inlineCss` (desempenho no celular); a CSP e
+  os demais cabeçalhos **não foram alterados** e não há violação de CSP no navegador (verificado em 4
+  páginas); `Tracking.tsx`, `ConsentBanner.tsx` e o Consent Mode inalterados.
+  **Responsável**: Claude Code. **Impacto LGPD**: nenhum — dados institucionais já públicos no rodapé e
+  na política; nenhuma coleta nova, nenhum script novo.
+
+## 2026-10-18
+- **Alteração**: consentimento (`src/lib/consent.ts`, `Tracking.tsx`, `ConsentBanner.tsx`,
+  `ConsentPreferences.tsx`). (1) Revogar ou aceitar em uma aba agora vale nas outras abertas (evento
+  `storage`); antes uma aba antiga seguia com o consentimento velho. (2) O evento interno de consentimento
+  só é aplicado se o formato for válido (`isConsentState`). (3) Marketing aceito também envia
+  `fbq("consent","grant")`, igual ao `revoke` que já existia. (4) A revogação apaga cookies `_ga*`/`_fbp`/`_fbc`
+  gravados com atributo `Domain` (antes só apagava os de caminho simples e os de domínio permaneciam).
+  (5) O banner fecha ao salvar por qualquer caminho (inclusive o link "Preferências" do próprio banner) e
+  não reaparece se já houver escolha. (6) "Recusar" no banner passou a ter o mesmo peso visual do "Aceitar"
+  (botões com a mesma proeminência). (7) O título do diálogo de preferências deixou de ser `h2` (não vira
+  título da página). Mapeamento das categorias, Consent Mode v2 (padrão `denied`) e IDs inalterados.
+  **Responsável**: Claude Code. **Impacto LGPD**: positivo — revogação passa a ter efeito real em todas as
+  abas e nos cookies de domínio; nenhum script novo e nenhuma coleta nova. Validado (Regra 6, IDs falsos,
+  requisições a Google/Meta abortadas): Recusar → 0 requisições; Aceitar → GA4/Meta disparam.
+- **Alteração**: rodapé e páginas institucionais (`src/content/site.ts`, `Footer`, Termos de uso): horário
+  oficial seg a sex 8h às 18h e sáb 9h às 12h, link da ficha no Google Maps
+  (`https://maps.app.goo.gl/JSwQ3TjLnfVzfHc48`), data dos Termos 18/10/2026. Política de privacidade:
+  descrição e metadados revisados. Schema (`OpeningHoursSpecification`, `serviceType`, ofertas em /planos)
+  e `llms.txt` com os mesmos dados. **Responsável**: Claude Code (dados do Douglas).
+  **Impacto LGPD**: nenhum — dados institucionais da empresa, nenhum dado pessoal novo.
+- **Alteração**: `next.config.ts` passa a falhar fechado em produção se faltar configuração de segurança e
+  ganha redirect 301 de `www.nelvox.com.br` para o domínio sem `www`. **Responsável**: Claude Code.
+  **Impacto LGPD**: nenhum direto — evita duplicidade de origem para o consentimento (que fica no
+  `localStorage` por origem).

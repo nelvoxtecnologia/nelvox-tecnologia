@@ -21,11 +21,12 @@ export type ConsentState = {
   ts: number;
 };
 
-const STORAGE_KEY = "nelvox:consent";
+/** Chave do registro no localStorage; exportada para os ouvintes do evento `storage` (outras abas). */
+export const CONSENT_STORAGE_KEY = "nelvox:consent";
 
 export const CONSENT_CHANGED_EVENT = "nelvox:consent-changed";
 
-function isConsentState(value: unknown): value is ConsentState {
+export function isConsentState(value: unknown): value is ConsentState {
   if (typeof value !== "object" || value === null) return false;
   const v = value as Record<string, unknown>;
   return (
@@ -38,7 +39,7 @@ function isConsentState(value: unknown): value is ConsentState {
 
 export function readConsent(): ConsentState | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(CONSENT_STORAGE_KEY);
     if (!raw) return null;
     /* O localStorage é entrada não confiável (pode ser editado no
        navegador ou por extensão): valida o formato inteiro em vez de
@@ -59,7 +60,7 @@ export function saveConsent(analytics: boolean, marketing: boolean) {
     ts: Date.now(),
   };
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(state));
   } catch {
     /* Sem storage, o consentimento simplesmente não persiste entre visitas. */
   }
@@ -87,11 +88,24 @@ export function clearTrackingCookies(prefixes: string[]) {
   const isPrefixed = (cookieName: string, prefix: string) =>
     cookieName === prefix || cookieName.startsWith(`${prefix}_`);
 
+  /* O Google e a Meta costumam gravar estes cookies com Domain (ex.: .nelvox.com.br), e um
+     cookie com Domain só é apagado por uma expiração com o mesmo Domain. Tenta o host e cada
+     sufixo dele; um sufixo público (ex.: com.br) o navegador simplesmente recusa. */
+  const labels = location.hostname.split(".");
+  const domains = labels.slice(0, -1).flatMap((_, i) => {
+    const d = labels.slice(i).join(".");
+    return [d, `.${d}`];
+  });
+
   document.cookie.split(";").forEach((entry) => {
     const name = entry.split("=")[0]?.trim();
     if (!name) return;
     if (prefixes.some((prefix) => isPrefixed(name, prefix))) {
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      const expire = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      document.cookie = expire;
+      domains.forEach((domain) => {
+        document.cookie = `${expire};domain=${domain}`;
+      });
     }
   });
 }

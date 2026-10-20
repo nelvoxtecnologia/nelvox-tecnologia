@@ -43,15 +43,24 @@ export const PRIVACY_EMAIL = EMAIL;
 export const FOUNDER_NAME = "Douglas Barbosa Alves";
 export const SLOGAN = "Presença com intenção.";
 export const SITE_DESCRIPTION =
-  "Software house em Porto Seguro, BA. Cria sites e presença digital (site, Google Meu Negócio e " +
-  "Instagram) para negócios de saúde, turismo e negócios locais.";
+  "Infraestrutura de presença digital para negócios de Porto Seguro/BA: site, Google Meu Negócio e Instagram.";
 export const PHONE_E164 = "+55-73-99831-3910";
 export const PHONE_DISPLAY = "(73) 99831-3910";
-export const OPENING_HOURS_LABEL = "Seg a sex, 8h às 18h";
+export const OPENING_HOURS_LABEL = "Seg a sex, 8h às 18h · Sáb, 9h às 12h";
+/** Horário oficial em formato estruturado (schema.org); manter igual ao rótulo acima e ao Perfil no Google. */
+export const OPENING_HOURS = [
+  { days: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "08:00", closes: "18:00" },
+  { days: ["Saturday"], opens: "09:00", closes: "12:00" },
+] as const;
+/** Serviços que a Nelvox vende hoje (schema `serviceType`). Não incluir o que não é vendido (ver CLAUDE.md e o Playbook). */
+export const SERVICE_TYPES = [
+  "Criação de sites",
+  "Google Meu Negócio (Perfil da Empresa no Google)",
+  "Gestão de Instagram",
+] as const;
 export const INSTAGRAM_URL = "https://www.instagram.com/nelvox.tech/";
-/** Link curto de compartilhamento da ficha no Google. Resolve para a busca "Nelvox"
-    (kgmid /g/11z8dpxnz0), não para uma URL /maps/place/ — por isso fica o link curto. */
-export const GMB_URL = "https://share.google/1byQLfMtI7OHcWanh";
+/** Ficha da Nelvox no Google Maps (link de compartilhamento; resolve para /maps/place/Nelvox). */
+export const GMB_URL = "https://maps.app.goo.gl/JSwQ3TjLnfVzfHc48";
 export const LINKEDIN_URL = "";
 /** Endereço residencial: não publicado (ver LEGAL_NAME). Preencher só se isso mudar. */
 export const STREET_ADDRESS = "";
@@ -89,7 +98,7 @@ export const NAV_PLANOS_HREF = "/planos";
 export const NAV_TERMOS_HREF = "/termos-de-uso";
 export const NAV_TERMOS_LABEL = "Termos de uso";
 /** Data da versão em vigor do texto (docs/referencias/termos_de_uso_nelvox.md). Atualizar a cada mudança. */
-export const TERMS_UPDATED_AT = "3 de outubro de 2026";
+export const TERMS_UPDATED_AT = "18 de outubro de 2026";
 export const NAV_CTA = "Falar com a Nelvox";
 
 export const NAV_ITEMS = [{ label: NAV_ORIGEM_LABEL, href: NAV_ORIGEM_HREF }] as const;
@@ -111,8 +120,6 @@ export const SCENES = {
   },
 
   heroOn: {
-    /** H1 da home (SEO): fica na página desde o carregamento, em tipografia de apoio. */
-    h1: "Nelvox — criação de sites e presença digital em Porto Seguro, BA",
     eyebrow: "01 · Porto Seguro, BA",
     headline: "Todo porto precisa\nde *uma luz*.",
     body:
@@ -323,98 +330,6 @@ export const ORIGEM = {
   ],
 };
 
-/* ===== PÁGINA /PLANOS =====
-   Catálogo vigente (Playbook Operacional Nelvox V5.0, Parte 4 — Contrato
-   V2.3, Anexo II). Só os 5 planos públicos; o rótulo interno "(high ticket)"
-   do Dominação Digital não aparece aqui. Qualquer alteração de preço/escopo
-   precisa vir do contrato/anexo atualizado, não só deste arquivo. */
-export const PLANS_INTRO = {
-  eyebrow: "Planos",
-  headline: "Escolha o *tamanho* da luz.",
-  intro:
-    "Cada plano calibra o que fica aceso — da landing page até a presença " +
-    "completa em Google e Instagram. Escolha pelo que o seu negócio precisa agora; " +
-    "você pode crescer de plano quando fizer sentido.",
-};
-
-export const PLANS = [
-  {
-    id: "essencial",
-    name: "Essencial",
-    setup: "R$597",
-    monthly: "R$397/mês",
-    slaLabel: "Resposta em até 8h úteis",
-    includes: [
-      "Landing page com até 5 seções",
-      "SSL e hospedagem inclusos",
-      "WhatsApp flutuante no site",
-      "1 atualização por mês",
-      "Verificação técnica mensal",
-    ],
-  },
-  {
-    id: "presenca-digital",
-    name: "Presença Digital",
-    setup: "R$897",
-    monthly: "R$897/mês",
-    slaLabel: "Resposta em até 6h úteis",
-    includes: [
-      "Tudo do Essencial",
-      "Mapa no Google e Google Meu Negócio completo",
-      "Post semanal no Google Meu Negócio",
-      "Resposta às avaliações em até 48h",
-      "2 atualizações por mês",
-      "Relatório mensal",
-    ],
-  },
-  {
-    id: "presenca-conteudo",
-    name: "Presença + Conteúdo",
-    setup: "R$1.297",
-    monthly: "R$1.997/mês",
-    slaLabel: "Resposta em até 6h úteis",
-    includes: [
-      "Tudo do Presença Digital",
-      "Gestão completa do Instagram (calendário editorial, 8 posts/mês, stories 3x por semana)",
-      "3 atualizações por mês",
-      "Relatório ampliado",
-    ],
-  },
-  {
-    id: "autoridade-digital",
-    name: "Autoridade Digital",
-    setup: "R$1.997",
-    monthly: "R$2.797/mês",
-    slaLabel: "Resposta em até 4h úteis",
-    includes: [
-      "Site institucional com até 7 seções",
-      "Google Meu Negócio otimizado",
-      "Resposta às avaliações em até 24h",
-      "4 atualizações por mês",
-      "12 posts por mês (com Reels) e stories em dias úteis",
-      "1 página especial por trimestre",
-      "Reunião estratégica mensal",
-    ],
-  },
-  {
-    id: "dominacao-digital",
-    name: "Dominação Digital",
-    setup: "R$2.997",
-    monthly: "R$3.997/mês",
-    slaLabel: "Resposta em até 2h úteis",
-    includes: [
-      "Site institucional com até 10 seções, incluindo blog",
-      "Hospedagem dedicada",
-      "Google Meu Negócio com otimização completa",
-      "Publicação 2x por semana e resposta às avaliações em até 12h",
-      "Atualizações ilimitadas",
-      "20 posts por mês",
-      "1 vídeo institucional e 2 páginas especiais por trimestre",
-      "Relatório executivo e reunião quinzenal",
-    ],
-  },
-] as const;
-
 /* ===== POLÍTICA DE PRIVACIDADE (/politica-de-privacidade) =====
    Texto vindo do Claude Design (docs/design-handoff — "Politica de
    Privacidade.dc.html"). Qualquer trecho entre [colchetes] é um dado ainda
@@ -426,7 +341,7 @@ export const PRIVACY = {
   headline: "Política de *privacidade*",
   metaTitle: "Política de Privacidade",
   metaDescription:
-    "Quais dados o site da Nelvox coleta, por quê, e como você pode exercer seus direitos pela LGPD.",
+    "Quais dados o site da Nelvox coleta, para que usa, quais cookies pedem consentimento, por quanto tempo guarda e como exercer seus direitos pela LGPD.",
   intro:
     "Um farol só funciona se as pessoas confiam nele. Esta página explica, com clareza, " +
     "quais dados o site da Nelvox coleta, por que coleta e o que você pode fazer com eles, " +
@@ -482,6 +397,14 @@ export const PRIVACY = {
           "endereço, e-mail e telefone) e o registro da assinatura eletrônica.",
       },
       {
+        title: "Contatos comerciais de empresas",
+        text:
+          "Para oferecer nossos serviços, podemos entrar em contato com negócios cujos dados são " +
+          "públicos (nome do negócio, telefone e endereço, por exemplo no Google). Se você não quiser " +
+          "ser contatado, é só avisar: paramos e registramos o pedido numa lista de supressão, para " +
+          "não procurar você de novo.",
+      },
+      {
         title: "Dados de navegação",
         text:
           "Endereço IP, tipo de dispositivo e navegador, páginas visitadas, tempo de visita e a " +
@@ -514,7 +437,10 @@ export const PRIVACY = {
         term: "Procedimentos de contrato",
         text: "Conversas, propostas, assinatura do contrato, cobrança e a prestação do serviço.",
       },
-      { term: "Legítimo interesse", text: "Segurança do site e cookies estritamente necessários." },
+      {
+        term: "Legítimo interesse",
+        text: "Segurança do site, cookies estritamente necessários e o contato comercial com empresas.",
+      },
       {
         term: "Obrigação legal",
         text: "Registros exigidos por lei, como o Marco Civil da Internet e a legislação fiscal.",
@@ -576,6 +502,7 @@ export const PRIVACY = {
   retencao: {
     rows: [
       { term: "Conversas sem contrato", text: "Até 12 meses após o último contato." },
+      { term: "Contatos comerciais sem resposta", text: "Até 6 meses." },
       {
         term: "Clientes",
         text: "Durante o contrato e pelo prazo exigido pela legislação fiscal (5 anos).",
@@ -637,19 +564,19 @@ export const PRIVACY_HAS_PLACEHOLDER = hasBracketPlaceholder(PRIVACY);
 /** Título e descrição (até 155 caracteres) de cada rota interna. Só fatos oficiais, sem promessa de resultado. */
 export const PAGE_META = {
   quemSomos: {
-    title: `${NAV_ORIGEM_LABEL} — Nelvox`,
+    title: "Quem somos: o método Farol",
     description:
       "Por que a Nelvox, software house de Porto Seguro, BA, trata presença digital como um farol, " +
       "e como a empresa nasceu. Com método, não por sorte.",
   },
   planos: {
-    title: "Planos — Nelvox",
+    title: "Planos de site, Perfil no Google e Instagram",
     description:
       "Planos de presença digital da Nelvox, de Porto Seguro, BA: da landing page à gestão de " +
       "Google Meu Negócio e Instagram. Veja o que cada um inclui.",
   },
   termos: {
-    title: `${NAV_TERMOS_LABEL} — Nelvox`,
+    title: NAV_TERMOS_LABEL,
     description:
       "Condições de uso do site da Nelvox: uso adequado, propriedade intelectual, responsabilidade, " +
       "cookies, dados pessoais e foro.",
@@ -657,23 +584,11 @@ export const PAGE_META = {
 } as const;
 
 export const META = {
-  title: "Nelvox — Criação de sites e presença digital em Porto Seguro, BA",
+  /* Sem o sufixo da marca: o layout acrescenta " | Nelvox" (title.template). Com o sufixo o título
+     tem 60 caracteres. A tag <meta name="keywords"> foi removida: o Google a ignora desde 2009. */
+  title: "Criação de sites e presença digital em Porto Seguro",
   description:
-    "Software house em Porto Seguro, BA. Criamos sites e presença digital " +
-    "para clínicas, pousadas e negócios locais — com método, sem atalho.",
-  /* O Google ignora a tag <meta name="keywords"> para ranqueamento desde
-     2009, mas outros buscadores e ferramentas de preview ainda a leem —
-     por isso ela custa pouco e não faz mal nenhum manter. O que de fato
-     move o SEO aqui são os termos no title/description acima e nos H1/H2
-     de cada seção (ver SCENES em site.ts), não esta lista. */
-  keywords: [
-    "criação de site",
-    "presença digital",
-    "site para clínica",
-    "site para pousada",
-    "Porto Seguro BA",
-    "Google Meu Negócio",
-    "SEO local Bahia",
-  ],
+    "A Nelvox cria e mantém site, Google Meu Negócio e Instagram para negócios locais de saúde, " +
+    "turismo e comércio. Vamos conversar sobre o seu caso.",
   siteName: "Nelvox",
 };

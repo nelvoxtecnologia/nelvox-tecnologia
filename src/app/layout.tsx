@@ -13,9 +13,8 @@ import "./globals.css";
    e vira as tags og:image e twitter:image. */
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: META.title,
+  title: { default: `${META.title} | ${META.siteName}`, template: `%s | ${META.siteName}` },
   description: META.description,
-  keywords: META.keywords,
   applicationName: META.siteName,
   alternates: { canonical: "/" },
   openGraph: {
@@ -23,12 +22,12 @@ export const metadata: Metadata = {
     locale: "pt_BR",
     url: SITE_URL,
     siteName: META.siteName,
-    title: META.title,
+    title: `${META.title} | ${META.siteName}`,
     description: META.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: META.title,
+    title: `${META.title} | ${META.siteName}`,
     description: META.description,
   },
   robots: { index: true, follow: true },
@@ -50,6 +49,11 @@ export default function RootLayout({
       <head>
         <MotionScript />
         <JsonLd />
+        {/* Sem JavaScript os cards do Método (Saúde, Turismo, Negócios Locais) ficariam em opacity:0
+            para sempre: a revelação por rolagem depende de JS. Aqui eles aparecem de uma vez. */}
+        <noscript>
+          <style>{"#cena-4 button{opacity:1!important}"}</style>
+        </noscript>
       </head>
       {/* Extensões de navegador escrevem atributos no <body> antes do
           React hidratar (o ColorZilla injeta cz-shortcut-listen, por
@@ -57,6 +61,13 @@ export default function RootLayout({
           Não há nada a corrigir no código — o aviso é sobre o ambiente
           de quem visita, então é suprimido aqui. */}
       <body suppressHydrationWarning>
+        {/* Primeiro elemento focável de TODAS as páginas: permite pular a navegação. */}
+        <a
+          href="#conteudo"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:bg-gold-400 focus:px-6 focus:py-2 focus:font-body focus:text-[15px] focus:font-semibold focus:text-navy-950"
+        >
+          Pular para o conteúdo
+        </a>
         {children}
         <WhatsappFloatingButton />
         <ConsentBanner />

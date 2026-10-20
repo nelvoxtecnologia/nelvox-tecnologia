@@ -217,3 +217,25 @@ Pedido do Douglas, depois da entrega acima. Base: auditoria documental de 01/10/
 4. **Validação jurídica** (⚖️ na auditoria, item 12 do plano): a Política nunca passou por advogado.
 5. **Enquadramento MEI** (🧾, achado nº 1 da auditoria) segue sem resposta do contador e **não** foi tocado
    no texto público.
+
+## Complemento 2 (3 de outubro): H1 sem legenda, logo com fundo escuro e prospecção na Política
+
+Depois do merge do PR #1, a pedido do Douglas.
+
+- **H1 da home:** a legenda "Nelvox — criação de sites e presença digital em Porto Seguro, BA" **foi retirada**
+  (quebrava a experiência). Retirar o H1 deixaria a home sem `<h1`, o problema original, e escondê-lo com
+  `sr-only` ou opacidade zero é o que o Google trata como texto oculto. Em vez disso, a headline que o visitante já
+  vê depois do clique, **"Todo porto precisa de uma luz.", passou a ser o `h1`** e está sempre no HTML servido
+  (o bloco de texto da Cena 1 fica `invisible` até o farol acender; antes do clique a tela só tem o farol e o
+  "TOQUE NO FAROL"). Nenhum texto novo na tela. O eyebrow e o parágrafo da Cena 1 também passam a estar no HTML.
+  **Verificado:** o texto da Cena 1 depois do clique ficou **idêntico, pixel a pixel**, ao estado anterior à
+  legenda, em 1366×641 e em 360×740; `seo:check` aprovado, 1 `<h1` na home.
+  **Contrapartida:** esse `h1` não traz as palavras "criação de sites"; elas continuam no `title`, na `description`
+  e no schema. O texto fica oculto até o clique, como o resto da Cena 1.
+- **Logo do schema:** trocada para `simbolo_nelvox_gold_navy.png` (símbolo dourado sobre azul-marinho), que tem
+  contraste sobre o branco onde o Google exibe logos. `simbolo_nelvox.svg` e `.png` seguem em `public/brand/`.
+  Decisão pendente 3 **resolvida**.
+- **Política, prospecção e retenção:** novo card "Contatos comerciais de empresas", base "legítimo interesse"
+  estendida a esse contato e prazo "Contatos comerciais sem resposta: até 6 meses" (da auditoria, confirmado).
+  "Conversas sem contrato: até 12 meses" ficou como estava (grupo diferente). Fornecedores confirmados. Decisões
+  pendentes 3 e 4 e o item 1 de "não publicado" **resolvidos**. Continua pendente a **validação jurídica**.

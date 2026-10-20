@@ -1,6 +1,7 @@
 import { RichText } from "@/components/ui/RichText";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { PLANS, PLANS_INTRO, contactHrefForPlan } from "@/content/site";
+import { contactHrefForPlan } from "@/content/site";
+import { PLANS, PLANS_INTRO, PRICES_VALID_UNTIL_LABEL } from "@/content/plans";
 
 /**
  * Corpo da página /planos. Um card por plano (mesmo padrão simples de card
@@ -17,6 +18,9 @@ export function PlansContent() {
         </h1>
         <p className="max-w-[40em] font-body text-[16px] leading-[1.7] text-papel-500">
           {PLANS_INTRO.intro}
+        </p>
+        <p className="font-body text-[14px] text-papel-500">
+          Valores vigentes até {PRICES_VALID_UNTIL_LABEL}.
         </p>
       </header>
 

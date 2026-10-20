@@ -10,7 +10,8 @@ import type { NextConfig } from "next";
    'unsafe-inline' é necessário porque o Next injeta scripts inline de
    hidratação e o site tem um script inline (MotionScript) e os snippets do
    GA4/Meta Pixel. Só carregam origens que o site realmente usa. */
-const isDev = process.env.NODE_ENV !== "production";
+/* Falha fechado: o conjunto seguro (HSTS, sem unsafe-eval) é o padrão; só `next dev` o relaxa. */
+const isDev = process.env.NODE_ENV === "development";
 
 const csp = [
   // Padrão: só o próprio site.
@@ -58,6 +59,13 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // Não anuncia "X-Powered-By: Next.js" (menos informação para quem faz varredura).
   poweredByHeader: false,
+  /* Desempenho no celular: o CSS (~10 KiB, Tailwind) vai dentro do HTML em vez de um <link> que
+     bloqueia a primeira pintura e custa uma ida e volta à rede. Mais indicado para visitantes novos
+     (o caso da maioria vindo do Google); como o HTML já é servido do cache da CDN, o custo de
+     reenviar o CSS junto é pequeno. Nenhuma mudança visual. Ver docs/seo/desempenho_mobile.md. */
+  experimental: {
+    inlineCss: true,
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
@@ -66,6 +74,13 @@ const nextConfig: NextConfig = {
     return [
       { source: "/origem", destination: "/quem-somos", permanent: true },
       { source: "/privacidade", destination: "/politica-de-privacidade", permanent: true },
+      // Um endereço só por página (www e apex duplicariam o conteúdo para o Google).
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "www.nelvox.com.br" }],
+        destination: "https://nelvox.com.br/:path*",
+        permanent: true,
+      },
     ];
   },
 };
