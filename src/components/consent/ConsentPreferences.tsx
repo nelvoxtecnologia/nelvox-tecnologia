@@ -13,7 +13,7 @@ const CATEGORIES: Category[] = [
   {
     key: "analytics",
     title: "Análise",
-    description: "Google Analytics — como o site é usado, para melhorá-lo.",
+    description: "Google Analytics e Metricool — como o site é usado, para melhorá-lo.",
   },
   {
     key: "marketing",

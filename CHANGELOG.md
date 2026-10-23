@@ -132,3 +132,16 @@ Formato exigido pela Regra 5 dos guardrails (ver `CLAUDE.md`).
   ganha redirect 301 de `www.nelvox.com.br` para o domínio sem `www`. **Responsável**: Claude Code.
   **Impacto LGPD**: nenhum direto — evita duplicidade de origem para o consentimento (que fica no
   `localStorage` por origem).
+
+## 2026-10-23
+- **Alteração**: pixel do Metricool (`src/components/consent/Tracking.tsx`, `next.config.ts`, `src/content/site.ts`,
+  `ConsentPreferences.tsx`). Entra na categoria **Análise** (decisão do Douglas, Regra 4): o `be.js` só é
+  carregado depois de "Aceitar" ou "Configurar" com Análise marcada, e há uma chamada por troca de rota. Como o
+  Metricool não é do Google, o Consent Mode não o cobre: o bloqueio é feito no próprio componente. "Recusar" ou
+  revogar Análise = nenhuma requisição a `metricool.com`. A CSP ganhou `https://tracker.metricool.com` em
+  `script-src` e `img-src` (o script envia os dados por uma imagem). A Política de privacidade e o diálogo de
+  preferências passam a citar o Metricool. O hash do pixel é público (vem no snippet oficial).
+  **Responsável**: Claude Code. **Impacto LGPD**: sim — novo fornecedor de análise que recebe IP, URL da página,
+  tamanho da tela e origem da visita (o script não grava cookie nem usa o armazenamento do navegador); só com
+  consentimento. Validado (Regra 6, IDs falsos, requisições abortadas): Recusar → 0 requisições; Aceitar →
+  GA4, Meta e Metricool disparam.
