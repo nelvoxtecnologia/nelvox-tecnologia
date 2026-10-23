@@ -463,7 +463,7 @@ export const PRIVACY = {
         title: "Análise",
         badge: { label: "Com consentimento", filled: false },
         text: "Mostram, de forma agregada, quais páginas são visitadas e de onde vêm os visitantes.",
-        meta: "_ga, _ga_* · Google Analytics (Google) · até 2 anos",
+        meta: "_ga, _ga_* · Google Analytics (Google) · até 2 anos. Metricool: não grava cookie; recebe seu IP, a página visitada, o tamanho da tela e a origem da visita",
       },
       {
         title: "Marketing",
@@ -489,7 +489,7 @@ export const PRIVACY = {
         term: "Armazenamento",
         text: "Google (Drive e Planilhas) — propostas, contratos e planilhas de atendimento.",
       },
-      { term: "Análise e anúncios", text: "Google e Meta — só se você aceitar esses cookies." },
+      { term: "Análise e anúncios", text: "Google e Metricool (análise) e Meta (anúncios) — só se você aceitar a categoria correspondente." },
       { term: "Autoridades", text: "Quando houver ordem judicial ou obrigação legal." },
     ],
   },

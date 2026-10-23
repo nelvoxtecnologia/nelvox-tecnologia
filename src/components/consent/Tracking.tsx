@@ -21,6 +21,7 @@ declare global {
     gtag?: (...args: unknown[]) => void;
     fbq?: (...args: unknown[]) => void;
     _fbq?: unknown;
+    beTracker?: { t: (data: { hash: string }) => void };
   }
 }
 
@@ -35,8 +36,14 @@ const META_PIXEL_ID = /^\d{6,20}$/.test(process.env.NEXT_PUBLIC_META_PIXEL_ID ??
   ? process.env.NEXT_PUBLIC_META_PIXEL_ID
   : undefined;
 
+/* Pixel do Metricool: hash público (aparece no HTML do snippet oficial), não é segredo.
+   Fica na categoria Análise e NÃO passa pelo Consent Mode (não é do Google): o
+   carregamento é travado aqui, pelo consentimento de Análise. */
+const METRICOOL_HASH = "e3ab0a4a91216e108b3aa6ca1921f370";
+const trackMetricool = () => window.beTracker?.t({ hash: METRICOOL_HASH });
+
 /**
- * GA4 e Meta Pixel — guardrails em CLAUDE.md ("Guardrails de Rastreamento e
+ * GA4, Meta Pixel e Metricool — guardrails em CLAUDE.md ("Guardrails de Rastreamento e
  * Consentimento"):
  *  - Regra 1: nenhum script de rastreamento carrega, dispara ou faz requisição de
  *    rede antes do consentimento da categoria (GA4 = Análise, Meta = Marketing).
@@ -105,6 +112,8 @@ export function Tracking() {
     if (consent?.analytics && typeof window.gtag === "function") {
       window.gtag("event", "page_view", { page_path: pathname });
     }
+    /* O Metricool lê a URL no momento da chamada: uma por troca de rota (a primeira sai no onLoad). */
+    if (consent?.analytics) trackMetricool();
     if (consent?.marketing && typeof window.fbq === "function") {
       window.fbq("track", "PageView");
     }
@@ -127,6 +136,11 @@ export function Tracking() {
             {`gtag("consent","update",{analytics_storage:"granted",ad_storage:"${grant(consent.marketing)}",ad_user_data:"${grant(consent.marketing)}",ad_personalization:"${grant(consent.marketing)}"});gtag("js",new Date());gtag("config","${GA_ID}");`}
           </Script>
         </>
+      )}
+
+      {/* Metricool: só com consentimento de Análise. */}
+      {consent?.analytics && (
+        <Script src="https://tracker.metricool.com/resources/be.js" strategy="afterInteractive" onLoad={trackMetricool} />
       )}
 
       {/* Meta Pixel: só com consentimento de Marketing. */}

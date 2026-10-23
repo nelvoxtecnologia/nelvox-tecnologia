@@ -16,13 +16,13 @@ const isDev = process.env.NODE_ENV === "development";
 const csp = [
   // Padrão: só o próprio site.
   "default-src 'self'",
-  // Scripts: o site, os inline necessários e as duas ferramentas de métricas
+  // Scripts: o site, os inline necessários e as ferramentas de métricas
   // (só carregam após consentimento — ver Tracking.tsx). 'unsafe-eval' apenas em dev (HMR).
-  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://connect.facebook.net https://tracker.metricool.com${isDev ? " 'unsafe-eval'" : ""}`,
   // Estilos: Tailwind gera CSS próprio; o Next injeta <style> inline.
   "style-src 'self' 'unsafe-inline'",
-  // Imagens/pixels de rastreio do GA4 e do Meta.
-  "img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.facebook.com",
+  // Imagens/pixels de rastreio do GA4, do Meta e do Metricool.
+  "img-src 'self' data: https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://www.facebook.com https://tracker.metricool.com",
   // Fontes vêm do próprio domínio (next/font baixa e serve localmente).
   "font-src 'self'",
   // Envio de eventos do GA4 e do Meta Pixel.
